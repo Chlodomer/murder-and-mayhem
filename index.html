@@ -1,0 +1,2425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEROVINGIA — The Feud of Sichar &amp; Chramnesind</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --chrome:#b8b4a8; --chrome-hi:#e8e4d8; --chrome-lo:#6e6a60;
+    --panel:#cdc9bd; --ink:#1c1a14; --gold:#c9a227; --blood:#a3261e;
+    --feud0:#3f9e3f; --feud1:#d9a426; --feud2:#a3261e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;background:#0e1320}
+  body{font-family:'Silkscreen',monospace;color:var(--ink)}
+  #c{position:absolute;inset:0}
+  #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+
+  .tag{font-family:'Silkscreen',monospace;font-size:9px;letter-spacing:.5px;
+    background:rgba(20,22,30,.78);color:#fff;padding:2px 5px;border-radius:3px;
+    border:1px solid rgba(255,255,255,.25);white-space:nowrap;text-shadow:none}
+  .tag.red{border-color:#ff7b6e;color:#ffb4ab}
+  .tag.blue{border-color:#7ea8ff;color:#b7ccff}
+  .tag.green{border-color:#8fd08f;color:#bfe8bf}
+  .tag.gold{border-color:#e8c95a;color:#f3df9a}
+  .tag.gray{border-color:#999;color:#ccc}
+  .tag.dim{opacity:.35}
+
+  .loctag{font-family:'Silkscreen',monospace;font-size:10px;letter-spacing:1px;
+    color:#fffbe8;background:rgba(40,34,20,.55);padding:2px 7px;border:1px dashed rgba(255,245,200,.5);
+    text-transform:uppercase;white-space:nowrap}
+
+  .bubble{font-family:'IM Fell English',serif;font-size:15px;line-height:1.25;
+    background:#fdf6df;color:#241d10;padding:7px 11px;border-radius:10px;max-width:240px;
+    border:2px solid #241d10;box-shadow:3px 3px 0 rgba(0,0,0,.35);white-space:normal;text-align:center}
+  .bubble:after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-6px;
+    border:6px solid transparent;border-top-color:#241d10}
+
+  /* ---------- top chrome bar ---------- */
+  #topbar{position:absolute;top:0;left:0;right:0;height:46px;z-index:20;display:flex;align-items:center;gap:14px;
+    background:linear-gradient(#d6d2c6,#aeaa9e);border-bottom:2px solid var(--chrome-lo);
+    box-shadow:inset 0 1px 0 var(--chrome-hi);padding:0 12px;user-select:none}
+  #topbar .brand{font-size:13px;font-weight:700;letter-spacing:1px;color:#2b2418}
+  #topbar .brand span{color:var(--blood)}
+  .chip{background:#23211b;color:#e8e0c8;font-size:10px;padding:5px 9px;border-radius:3px;
+    border:1px solid #000;box-shadow:inset 0 0 0 1px #4a463a;display:flex;gap:7px;align-items:center}
+  .chip b{color:var(--gold)}
+  #feudwrap{display:flex;align-items:center;gap:8px;margin-left:auto}
+  #feudwrap .lbl{font-size:10px;color:#3a3328}
+  #feudbar{width:150px;height:14px;background:#23211b;border:1px solid #000;box-shadow:inset 0 0 0 1px #4a463a;position:relative}
+  #feudfill{height:100%;width:0%;background:var(--feud0);transition:width .9s ease,background .9s ease}
+  #feudbar .ticks{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(0,0,0,.45) 14px 15px)}
+
+  /* ---------- bottom panel ---------- */
+  #botpanel{position:absolute;left:50%;transform:translateX(-50%);bottom:14px;z-index:20;
+    width:min(980px,calc(100% - 24px));
+    background:linear-gradient(#d6d2c6,#b6b2a6);border:2px solid var(--chrome-lo);
+    box-shadow:inset 0 1px 0 var(--chrome-hi),0 8px 24px rgba(0,0,0,.5);border-radius:4px;
+    display:flex;gap:0;align-items:stretch;user-select:none}
+  #scenemeta{width:188px;flex:none;padding:10px 12px;border-right:2px solid var(--chrome-lo);display:flex;flex-direction:column;gap:6px;justify-content:center}
+  #scenenum{font-size:9px;color:#5c5346}
+  #scenetitle{font-size:12px;font-weight:700;line-height:1.3;color:#241d10}
+  #scenedate{font-size:9px;color:#fff;background:#5e3a1e;align-self:flex-start;padding:2px 6px;border-radius:2px}
+  #narrwrap{flex:1;padding:10px 16px;display:flex;flex-direction:column;justify-content:center;gap:5px;min-height:96px}
+  #narr{font-family:'IM Fell English',serif;font-size:17px;line-height:1.35;color:#241d10}
+  #latin{font-family:'IM Fell English',serif;font-style:italic;font-size:12.5px;color:#6b5230}
+  #latin:before{content:'❧ '}
+  #ctrls{width:196px;flex:none;border-left:2px solid var(--chrome-lo);padding:9px 10px;display:flex;flex-direction:column;gap:7px;justify-content:center}
+  #ctrls .row{display:flex;gap:5px}
+  button{font-family:'Silkscreen',monospace;font-size:11px;cursor:pointer;flex:1;
+    background:linear-gradient(#e4e0d4,#bcb8ac);border:2px solid;border-color:var(--chrome-hi) var(--chrome-lo) var(--chrome-lo) var(--chrome-hi);
+    padding:6px 4px;color:#241d10}
+  button:active{border-color:var(--chrome-lo) var(--chrome-hi) var(--chrome-hi) var(--chrome-lo)}
+  button:disabled{opacity:.45;cursor:default}
+  select{font-family:'Silkscreen',monospace;font-size:10px;background:#e4e0d4;border:2px solid var(--chrome-lo);padding:4px}
+  #dots{position:absolute;left:50%;transform:translateX(-50%);bottom:0;top:-16px;height:14px;display:flex;gap:5px;align-items:center}
+  .dot{width:10px;height:10px;background:#7a766a;border:1px solid #3a382f;cursor:pointer;transform:rotate(45deg)}
+  .dot.on{background:var(--gold);box-shadow:0 0 6px var(--gold)}
+  .dot.done{background:#4d6b3a}
+
+  /* ---------- headline ---------- */
+  #headline{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) rotate(-2deg) scale(.6);
+    z-index:30;background:#f6efdc;border:3px solid #1c1a14;padding:18px 30px 14px;min-width:340px;max-width:560px;
+    box-shadow:8px 10px 0 rgba(0,0,0,.45);text-align:center;opacity:0;pointer-events:none;
+    transition:opacity .25s ease,transform .25s cubic-bezier(.2,1.6,.4,1)}
+  #headline.show{opacity:1;transform:translate(-50%,-50%) rotate(-2deg) scale(1)}
+  #headline .paper{font-size:9px;letter-spacing:3px;color:#6b5230;border-bottom:1px solid #6b5230;padding-bottom:5px;margin-bottom:8px}
+  #headline h1{font-family:'Silkscreen',monospace;font-size:24px;line-height:1.15;color:#1c1a14}
+  #headline p{font-family:'IM Fell English',serif;font-style:italic;font-size:14px;margin-top:6px;color:#43361f}
+
+  /* ---------- kill flash ---------- */
+  #flash{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;
+    background:radial-gradient(ellipse at center,rgba(163,38,30,.05) 30%,rgba(163,38,30,.5) 100%);
+    transition:opacity .12s ease}
+  #flash.on{opacity:1}
+
+  /* ---------- drone-through-clouds fade ---------- */
+  #cloudfade{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:0;
+    background:radial-gradient(ellipse at 50% 40%,#ffffff 30%,#dde5ee 70%,#c8d2de 100%);
+    transition:opacity 1.5s ease-out}
+  #cloudfade.on{opacity:1;transition:opacity .04s}
+
+  /* ---------- act card ---------- */
+  #actcard{position:absolute;inset:0;z-index:25;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:14px;background:radial-gradient(ellipse at center,rgba(10,12,20,.78) 0%,rgba(10,12,20,.94) 100%);
+    opacity:0;pointer-events:none;transition:opacity .5s ease}
+  #actcard.show{opacity:1}
+  #actcard .num{font-family:'Silkscreen',monospace;font-size:30px;letter-spacing:6px;color:var(--gold);
+    text-shadow:0 0 24px rgba(201,162,39,.5)}
+  #actcard .rule{width:220px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+  #actcard .ttl{font-family:'IM Fell English',serif;font-style:italic;font-size:24px;color:#e8e0c8}
+
+  /* ---------- retro intro sequence ---------- */
+  #intro{position:absolute;inset:0;z-index:38;display:none;align-items:center;justify-content:center;
+    background:#0a0e1a;cursor:pointer}
+  #intro:after{content:'';position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 4px);}
+  #intro:before{content:'';position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%)}
+  #introbox{width:min(720px,calc(100% - 60px));min-height:340px;display:flex;flex-direction:column;gap:22px;
+    border:2px solid #3a4258;padding:34px 38px;background:rgba(14,18,32,.6);
+    box-shadow:0 0 40px rgba(201,162,39,.08), inset 0 0 60px rgba(0,0,0,.5)}
+  #introtitle{font-family:'Silkscreen',monospace;font-size:20px;letter-spacing:3px;color:var(--gold);
+    text-shadow:0 0 12px rgba(201,162,39,.6);border-bottom:1px solid #3a4258;padding-bottom:12px}
+  #introbody{flex:1;font-family:'Silkscreen',monospace;font-size:12px;line-height:2.1;color:#cfd6e4;
+    text-shadow:0 0 8px rgba(160,190,255,.25);white-space:pre-wrap}
+  #introbody .gold{color:var(--gold)} #introbody .red{color:#ff7b6e}
+  #introbody .blue{color:#7ea8ff} #introbody .green{color:#8fd08f}
+  #introprompt{font-family:'Silkscreen',monospace;font-size:10px;color:#6d7790;letter-spacing:2px;
+    animation:blink 1.1s steps(2) infinite;align-self:flex-end}
+  @keyframes blink{50%{opacity:0}}
+  #introskip{position:absolute;top:18px;right:18px;flex:none;font-size:10px;padding:7px 12px;z-index:2}
+  #roster{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between;margin-top:6px}
+  .rcard{width:140px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+    border:1px solid #3a4258;padding:14px 8px;background:rgba(0,0,0,.3)}
+  .rcard .sprite{display:flex;flex-direction:column;align-items:center;image-rendering:pixelated}
+  .rcard .sprite i{display:block}
+  .rcard .sprite .hd{width:16px;height:12px;background:#e0b08a}
+  .rcard .sprite .bd{width:24px;height:18px}
+  .rcard .sprite .lg{width:18px;height:8px;background:#33291c}
+  .rcard .nm{font-family:'Silkscreen',monospace;font-size:10px;letter-spacing:1px}
+  .rcard .ep{font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:#9aa4bc;line-height:1.3}
+  #introbody .gray{color:#9aa4bc}
+
+  /* big title card */
+  #bigtitle{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
+  #bigtitle .t1{font-family:'Silkscreen',monospace;font-size:44px;line-height:1.1;color:#c92e22;letter-spacing:3px;
+    text-shadow:0 0 28px rgba(201,46,34,.65),3px 3px 0 #000;animation:tdrop .7s cubic-bezier(.2,1.5,.4,1) both}
+  #bigtitle .t2{font-family:'Silkscreen',monospace;font-size:22px;color:#e8e0c8;letter-spacing:5px;
+    text-shadow:0 0 14px rgba(232,224,200,.4);animation:tdrop .7s .35s cubic-bezier(.2,1.5,.4,1) both}
+  #bigtitle .t3{font-family:'Silkscreen',monospace;font-size:10px;color:var(--gold);letter-spacing:3px;margin-top:14px;
+    animation:tfade 1s .9s both}
+  #bigtitle .t4{font-family:'IM Fell English',serif;font-style:italic;font-size:15px;color:#9a8f74;animation:tfade 1s 1.25s both}
+  @keyframes tdrop{from{opacity:0;transform:translateY(-40px) scale(1.4)}to{opacity:1;transform:none}}
+  @keyframes tfade{from{opacity:0}to{opacity:1}}
+
+  /* dramatis personae cards with live 3D portraits */
+  #personae{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+  .pcard{display:flex;gap:18px;align-items:center;border:1px solid #3a4258;background:rgba(0,0,0,.32);
+    padding:10px 16px 10px 10px;animation:tfade .5s both}
+  .pcard:nth-child(2){animation-delay:.25s}
+  .pcard:nth-child(3){animation-delay:.5s}
+  .pcard img{width:86px;height:104px;flex:none;border:1px solid #3a4258;background:
+    radial-gradient(ellipse at 50% 30%,#27304a 0%,#141a2c 100%);image-rendering:auto}
+  .pcard .pnm{font-family:'Silkscreen',monospace;font-size:12px;letter-spacing:1px;margin-bottom:5px}
+  .pcard .pbio{font-family:'IM Fell English',serif;font-size:14.5px;color:#b9c2d6;line-height:1.45}
+  .pcard .pbio i{color:var(--gold)}
+
+  /* ---------- intro / loading ---------- */
+  #boot{position:absolute;inset:0;z-index:40;background:#0e1320;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:18px;transition:opacity .6s ease}
+  #boot.gone{opacity:0;pointer-events:none}
+  #boot h1{font-size:26px;color:#e8e0c8;letter-spacing:2px;text-align:center;line-height:1.4}
+  #boot h1 span{color:var(--blood)}
+  #boot p{font-family:'IM Fell English',serif;font-size:16px;color:#9a8f74;font-style:italic;max-width:520px;text-align:center;line-height:1.5}
+  #boot .hint{font-size:10px;color:#5d6680;font-family:'Silkscreen',monospace;font-style:normal}
+  #bootbtn{flex:none;font-size:14px;padding:12px 34px;max-width:280px}
+  @media (max-width:860px){
+    #scenemeta{display:none}
+    #ctrls{width:150px}
+    #narr{font-size:14px}
+  }
+</style>
+</head>
+<body>
+<div id="c"></div>
+<div id="labels"></div>
+
+<div id="topbar">
+  <div class="brand">MEROVINGIA<span>™</span> · TOURAINE</div>
+  <div class="chip">A.D. <b id="datechip">585</b></div>
+  <div class="chip">CHURCH TREASURY <b id="treasury">1200</b> SOLIDI</div>
+  <div class="chip">HORA <b id="clockchip">XIII</b> · <span id="weatherchip" style="color:#9fc6e8">CLEAR</span></div>
+  <div id="feudwrap">
+    <span class="lbl">FEUD METER</span>
+    <div id="feudbar"><div id="feudfill"></div><div class="ticks"></div></div>
+    <button id="bmute" style="flex:none;padding:4px 8px;font-size:9px">SND ON</button>
+  </div>
+</div>
+
+<div id="botpanel">
+  <div id="dots"></div>
+  <div id="scenemeta">
+    <div id="scenenum">SCENE 1 / 14</div>
+    <div id="scenetitle">—</div>
+    <div id="scenedate">—</div>
+  </div>
+  <div id="narrwrap">
+    <div id="narr">—</div>
+    <div id="latin"></div>
+  </div>
+  <div id="ctrls">
+    <div class="row">
+      <button id="bprev" title="Previous scene">◀◀</button>
+      <button id="bplay" title="Pause / resume">❚❚</button>
+      <button id="bnext" title="Next scene">▶▶</button>
+    </div>
+    <div class="row">
+      <button id="brestart">RESTART</button>
+      <select id="bspeed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select>
+    </div>
+  </div>
+</div>
+
+<div id="headline"><div class="paper">— THE TOURAINE CHRONICLE —</div><h1></h1><p></p></div>
+
+<div id="actcard"><div class="num"></div><div class="rule"></div><div class="ttl"></div></div>
+<div id="flash"></div>
+<div id="cloudfade"></div>
+
+<div id="boot">
+  <h1>MEROVINGIA<span>™</span><br>THE FEUD OF SICHAR &amp; CHRAMNESIND</h1>
+  <p>"Gravia tunc inter Toronicos cives bella civilia surrexerunt…"<br>
+  A grievous civil war arose among the citizens of Tours.<br>— Gregory of Tours, Histories VII.47 &amp; IX.19 (A.D. 585–588)</p>
+  <button id="bootbtn">▶ BEGIN SIMULATION</button>
+  <p class="hint">DRAG TO ORBIT · WHEEL TO ZOOM · DIAMONDS JUMP BETWEEN SCENES</p>
+</div>
+
+<div id="intro">
+  <div id="introbox">
+    <div id="introtitle"></div>
+    <div id="introbody"></div>
+    <div id="introprompt">▼ CLICK TO CONTINUE</div>
+  </div>
+  <button id="introskip">SKIP INTRO ▶▶</button>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+/* ============================ basics ============================ */
+const ABORT = Symbol('abort');
+let seed = 1337;
+const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+
+const scene = new THREE.Scene();
+const DAY_SKY = new THREE.Color(0x9ed4e8), NIGHT_SKY = new THREE.Color(0x121a33);
+scene.background = DAY_SKY.clone();
+scene.fog = new THREE.Fog(0x9ed4e8, 60, 140);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 3));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.getElementById('c').appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(innerWidth, innerHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.inset = '0';
+labelRenderer.domElement.style.pointerEvents = 'none';
+document.getElementById('labels').appendChild(labelRenderer.domElement);
+
+const VIEW = 24;
+let aspect = innerWidth / innerHeight;
+const camera = new THREE.OrthographicCamera(-VIEW*aspect, VIEW*aspect, VIEW, -VIEW, -200, 400);
+camera.position.set(26, 30, 26);
+camera.zoom = 1.0;
+camera.updateProjectionMatrix();
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, -2);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minPolarAngle = 0.45;
+controls.maxPolarAngle = 1.25;
+controls.minZoom = 0.7;
+controls.maxZoom = 6;
+controls.enablePan = true;
+controls.update();
+
+addEventListener('resize', () => {
+  aspect = innerWidth / innerHeight;
+  camera.left = -VIEW*aspect; camera.right = VIEW*aspect;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  labelRenderer.setSize(innerWidth, innerHeight);
+});
+
+/* ============================ lights ============================ */
+const amb = new THREE.AmbientLight(0xffffff, 0.62);
+scene.add(amb);
+const sun = new THREE.DirectionalLight(0xfff2d8, 1.45);
+sun.position.set(30, 48, 18);
+sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096);
+sun.shadow.bias = -0.0004;
+const SC = sun.shadow.camera;
+SC.left = -42; SC.right = 42; SC.top = 42; SC.bottom = -42; SC.far = 160;
+scene.add(sun);
+const fireLight = new THREE.PointLight(0xff7722, 0, 42, 2);
+scene.add(fireLight);
+
+/* time of day (hour 0-24) + weather ('clear'|'overcast'|'rain'|'snow') */
+let hour = 13, weatherNow = 'clear';
+const ROMAN_H = ['XXIV','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII',
+                 'XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII','XXIII'];
+function setHour(h){
+  hour = ((h % 24) + 24) % 24;
+  const ang = (hour - 6) / 12 * Math.PI;          // 6h sunrise → 18h sunset
+  const elev = Math.sin(ang);
+  const day = THREE.MathUtils.clamp((elev + 0.12) / 0.42, 0, 1);
+  const warm = Math.max(0, 1 - Math.abs(elev - 0.10) * 5) * day;   // dawn/dusk glow
+  const o = (weatherNow === 'overcast' || weatherNow === 'rain') ? 1 : (weatherNow === 'snow' ? 0.55 : 0);
+  sun.position.set(Math.cos(ang) * 38, 10 + Math.max(elev, 0.05) * 40, 16);
+  sun.intensity = (0.12 + 1.8 * day) * (1 - 0.5 * o);
+  amb.intensity = 0.2 + 0.33 * day * (1 - 0.3 * o);
+  const sky = new THREE.Color(0x121a33).lerp(new THREE.Color(0x9ed4e8), day);
+  sky.lerp(new THREE.Color(0xe8946a), warm * 0.5);
+  sky.lerp(new THREE.Color(0x9aa4ac), o * day * 0.65);
+  scene.background.copy(sky);
+  scene.fog.color.copy(sky);
+  sun.color.copy(new THREE.Color(0xfff2d8).lerp(new THREE.Color(0xff9a55), warm).lerp(new THREE.Color(0x8aa0ff), 1 - day));
+  const cc = document.getElementById('clockchip');
+  if (cc) cc.textContent = ROMAN_H[Math.round(hour) % 24];
+}
+function setWeather(w){
+  weatherNow = w;
+  snow.visible = (w === 'snow');
+  rainPts.visible = (w === 'rain');
+  if (snowGround) snowGround.visible = (w === 'snow');
+  MAT.tree.color.set(w === 'snow' ? 0xc8d8dc : 0x3f7d3a);   // snow-laden crowns
+  setHour(hour);
+  const wc = document.getElementById('weatherchip');
+  if (wc) wc.textContent = w.toUpperCase();
+  SFX.ambience();
+}
+function tweenHour(target, dur, sig){
+  const h0 = hour;
+  const d = ((target - h0) % 24 + 36) % 24 - 12;   // shortest signed delta
+  return tween(dur, k => setHour(h0 + d * k), sig);
+}
+
+/* ============================ materials ============================ */
+const M = (c, opts={}) => new THREE.MeshLambertMaterial({ color: c, ...opts });
+const MAT = {
+  grass1: M(0x6fae4e), grass2: M(0x67a648), road: M(0xb9a07a), roadEdge: M(0xa08a66),
+  plaster: M(0xefe3c8), timber: M(0x6e4a2a), roofR: M(0xb5552f), roofB: M(0x8a6b43),
+  roofS: M(0x7d8893), stone: M(0xa8a394), stoneD: M(0x8c8779), water: M(0x4f86c6, {emissive:0x16314f}),
+  field: M(0xc9b35a), fieldRow: M(0xa8903e), tree: M(0x3f7d3a), trunk: M(0x5a3d22),
+  sheep: M(0xf2efe6), sheepHead: M(0x3a342c), char: M(0x2b2722), gold: M(0xe8c95a, {emissive:0x6b5210}),
+  blood: M(0x7e1812),
+};
+
+/* ============================ ground & terrain ============================ */
+const world = new THREE.Group(); scene.add(world);
+const HALF = 26;
+const WINDY = [];        // tree crowns swayed by the wind
+let snowGround = null;   // white terrain blanket for snow weather
+let bannerRef = null;    // the count's banner, flutters
+let windT = 0;           // accumulated sim-time for wind/bob cycles
+
+/* gentle hills: gaussian bumps, flattened to zero around settlements, roads, fields, river */
+const HILLS = [
+  [-20, -9, 5.5, 2.4], [-22, 14, 5, 1.9], [20, 15, 6, 2.2], [21, -7, 5, 1.7],
+  [10, 22, 4.5, 1.4], [-12, 22, 4, 1.3], [-25, 2, 4, 1.6], [25, 8, 4, 1.4],
+];
+const FLATS = [ // x0,x1,z0,z1 rectangles kept level
+  [-9, 9, -21, -9],        // Tours
+  [-7, 7, 6, 18],          // Manthelan
+  [-20, -11, 0, 10],       // Sichar's villa
+  [10, 20, 0, 10],         // Auno's farmstead
+  [-2.5, 2.5, -22, 24],    // north-south road
+  [-17, 17, 3, 8.5],       // east-west road
+  [-26, 26, -26, -18.5],   // river bank
+  [4.5, 8.5, 11.5, 15.5], [-8.3, -4.3, 9.8, 13.8], // Manthelan fields
+  [-21, -12.5, 14.5, 21.5], // western lake basin
+  [6.5, 11.5, 15, 19.5],    // village pond basin
+];
+function terrainY(x, z){
+  let h = 0;
+  for (const [hx, hz, r, amp] of HILLS){
+    const d2 = (x-hx)*(x-hx) + (z-hz)*(z-hz);
+    h += amp * Math.exp(-d2 / (2*r*r));
+  }
+  let damp = 1;
+  for (const [x0, x1, z0, z1] of FLATS){
+    const dx = Math.max(x0 - x, 0, x - x1), dz = Math.max(z0 - z, 0, z - z1);
+    damp = Math.min(damp, THREE.MathUtils.smoothstep(Math.hypot(dx, dz), 0, 5));
+  }
+  return h * damp;
+}
+{
+  const seg = 104;
+  const geo = new THREE.PlaneGeometry(52, 52, seg, seg);
+  geo.rotateX(-Math.PI/2);
+  const pos = geo.attributes.position, colors = [];
+  const c1 = new THREE.Color(0x6fae4e), c2 = new THREE.Color(0x67a648);
+  for (let i = 0; i < pos.count; i++){
+    const x = pos.getX(i), z = pos.getZ(i);
+    pos.setY(i, terrainY(x, z));
+    const cx = Math.floor((x + 26) / 2), cz = Math.floor((z + 26) / 2);
+    const c = ((cx + cz) % 2 === 0) ? c1 : c2;
+    colors.push(c.r, c.g, c.b);
+  }
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.computeVertexNormals();
+  const ground = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true }));
+  ground.receiveShadow = true;
+  world.add(ground);
+  // winter blanket: same heightfield, raised a hair, shown only in snow weather
+  snowGround = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: 0xe6edf2 }));
+  snowGround.position.y = 0.03;
+  snowGround.receiveShadow = true;
+  snowGround.visible = false;
+  world.add(snowGround);
+}
+function roadStrip(x, z, w, d){
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), MAT.road);
+  m.rotation.x = -Math.PI/2; m.position.set(x, 0.012, z); m.receiveShadow = true;
+  world.add(m);
+}
+roadStrip(0, 1.5, 1.7, 49);       // main north-south road: Tours gate to south edge
+roadStrip(0, 5.6, 30.6, 1.5);     // east-west crossroad at z=5.6
+// river Loire + bridge (north of Tours)
+{
+  const r = new THREE.Mesh(new THREE.PlaneGeometry(60, 3.4), MAT.water);
+  r.rotation.x = -Math.PI/2; r.position.set(0, 0.05, -23.2); world.add(r);
+  const b = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.5, 4.6), MAT.stoneD);
+  b.position.set(0, 0.25, -23.2); b.castShadow = true; world.add(b);
+}
+
+/* ============================ prop builders ============================ */
+const OBST = []; // {x,z,w,d,rot} footprints actors may not walk through
+function box(w,h,d,mat,x,y,z,parent){
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
+  m.position.set(x,y,z); m.castShadow = true; m.receiveShadow = true;
+  (parent||world).add(m); return m;
+}
+function pyramidRoof(w,d,h,mat,x,y,z,parent){
+  const m = new THREE.Mesh(new THREE.ConeGeometry(0.74, h, 4), mat);
+  m.rotation.y = Math.PI/4; m.scale.set(w, 1, d);
+  m.position.set(x, y, z); m.castShadow = true; (parent||world).add(m); return m;
+}
+function house(x, z, opts={}){
+  const g = new THREE.Group(); g.position.set(x, 0, z);
+  const w = opts.w||2.2, d = opts.d||1.8, h = opts.h||1.2;
+  box(w, h, d, opts.wall||MAT.plaster, 0, h/2, 0, g);
+  box(0.18, h, d+0.02, MAT.timber, -w/2+0.2, h/2, 0, g);
+  box(0.18, h, d+0.02, MAT.timber, w/2-0.2, h/2, 0, g);
+  pyramidRoof(w*1.12, d*1.12, opts.rh||1.0, opts.roof||MAT.roofR, 0, h + (opts.rh||1.0)/2, 0, g);
+  box(0.42, 0.62, 0.06, MAT.timber, 0, 0.31, d/2+0.02, g); // door
+  if (opts.rot) g.rotation.y = opts.rot;
+  OBST.push({ x, z, w: w+0.6, d: d+0.6, rot: opts.rot||0 });
+  world.add(g); return g;
+}
+function tower(x, z, r, h, mat, parent){
+  const g = parent||world;
+  const t = new THREE.Mesh(new THREE.CylinderGeometry(r, r*1.08, h, 8), mat);
+  t.position.set(x, h/2, z); t.castShadow = true; g.add(t);
+  const c = new THREE.Mesh(new THREE.ConeGeometry(r*1.3, r*1.7, 8), MAT.roofS);
+  c.position.set(x, h + r*0.85, z); c.castShadow = true; g.add(c);
+  OBST.push({ x, z, w: 2*r+0.4, d: 2*r+0.4, rot: 0 });
+  return t;
+}
+function cross(x, y, z, s, parent){
+  box(0.07*s, 0.5*s, 0.07*s, MAT.gold, x, y, z, parent);
+  box(0.3*s, 0.07*s, 0.07*s, MAT.gold, x, y+0.1*s, z, parent);
+}
+function tree(x, z, s=1){
+  const g = new THREE.Group(); g.position.set(x, terrainY(x, z), z);
+  box(0.18*s, 0.5*s, 0.18*s, MAT.trunk, 0, 0.25*s, 0, g);
+  const c = new THREE.Mesh(new THREE.ConeGeometry(0.55*s, 1.3*s, 6), MAT.tree);
+  c.position.y = 0.5*s + 0.65*s; c.castShadow = true; g.add(c);
+  WINDY.push(c);
+  OBST.push({ x, z, w: 0.8, d: 0.8, rot: 0 });
+  world.add(g); return g;
+}
+function fieldPlot(x, z, w, d, rot=0){
+  const g = new THREE.Group(); g.position.set(x, 0.015, z); g.rotation.y = rot;
+  const base = new THREE.Mesh(new THREE.PlaneGeometry(w, d), MAT.field);
+  base.rotation.x = -Math.PI/2; base.receiveShadow = true; g.add(base);
+  const rows = Math.floor(d/0.5);
+  for(let i=0;i<rows;i++){
+    const r = new THREE.Mesh(new THREE.PlaneGeometry(w*0.94, 0.13), MAT.fieldRow);
+    r.rotation.x = -Math.PI/2; r.position.set(0, 0.004, -d/2 + 0.4 + i*0.5); g.add(r);
+  }
+  world.add(g); return g;
+}
+function fenceRect(x, z, w, d){
+  const g = new THREE.Group(); g.position.set(x,0,z);
+  const mk = (px,pz,len,vert)=>{ const m = box(vert?0.08:len, 0.34, vert?len:0.08, MAT.timber, px, 0.3, pz, g); m.castShadow=false; };
+  mk(0, -d/2, w, false); mk(0, d/2, w, false); mk(-w/2, 0, d, true); mk(w/2, 0, d, true);
+  OBST.push(
+    { x, z: z-d/2, w: w+0.4, d: 0.5, rot: 0 }, { x, z: z+d/2, w: w+0.4, d: 0.5, rot: 0 },
+    { x: x-w/2, z, w: 0.5, d: d+0.4, rot: 0 }, { x: x+w/2, z, w: 0.5, d: d+0.4, rot: 0 });
+  world.add(g); return g;
+}
+function sheep(x, z){
+  const g = new THREE.Group(); g.position.set(x, 0, z);
+  box(0.55, 0.38, 0.34, MAT.sheep, 0, 0.38, 0, g);
+  box(0.2, 0.2, 0.18, MAT.sheepHead, 0.32, 0.45, 0, g);
+  for (const dz of [-0.1, 0.1]) for (const dx of [-0.16, 0.16]) box(0.07, 0.2, 0.07, MAT.sheepHead, dx, 0.1, dz, g);
+  g.rotation.y = rnd()*Math.PI*2;
+  world.add(g); return g;
+}
+
+/* ============================ places ============================ */
+// --- TOURS (north) ---
+const TOURS = {x:0, z:-15.5};
+{
+  const wallH = 1.5, wx = 7, wz = 4.6;
+  // walls with south gate gap
+  box(wx*2, wallH, 0.6, MAT.stone, TOURS.x, wallH/2, TOURS.z - wz);
+  box(wx-1.4, wallH, 0.6, MAT.stone, TOURS.x - (wx+1.4)/2 - 0.7, wallH/2, TOURS.z + wz);
+  box(wx-1.4, wallH, 0.6, MAT.stone, TOURS.x + (wx+1.4)/2 + 0.7, wallH/2, TOURS.z + wz);
+  box(0.6, wallH, wz*2, MAT.stone, TOURS.x - wx, wallH/2, TOURS.z);
+  box(0.6, wallH, wz*2, MAT.stone, TOURS.x + wx, wallH/2, TOURS.z);
+  tower(TOURS.x - wx, TOURS.z - wz, 0.7, 2.2, MAT.stoneD);
+  tower(TOURS.x + wx, TOURS.z - wz, 0.7, 2.2, MAT.stoneD);
+  tower(TOURS.x - wx, TOURS.z + wz, 0.7, 2.2, MAT.stoneD);
+  tower(TOURS.x + wx, TOURS.z + wz, 0.7, 2.2, MAT.stoneD);
+  tower(TOURS.x - 1.25, TOURS.z + wz, 0.55, 2.0, MAT.stoneD);
+  tower(TOURS.x + 1.25, TOURS.z + wz, 0.55, 2.0, MAT.stoneD);
+  // cathedral
+  const cat = new THREE.Group(); cat.position.set(TOURS.x - 2.6, 0, TOURS.z - 1.6);
+  box(2.6, 1.7, 4.0, MAT.stone, 0, 0.85, 0, cat);
+  pyramidRoof(2.9, 4.4, 1.2, MAT.roofS, 0, 2.3, 0, cat);
+  box(1.1, 3.1, 1.1, MAT.stone, 0, 1.55, 2.0, cat);
+  pyramidRoof(1.25, 1.25, 1.1, MAT.roofS, 0, 3.65, 2.0, cat);
+  cross(0, 4.45, 2.0, 1, cat);
+  world.add(cat);
+  // count's hall (tribunal)
+  const hall = new THREE.Group(); hall.position.set(TOURS.x + 3.1, 0, TOURS.z - 1.2);
+  box(3.4, 1.5, 2.4, MAT.plaster, 0, 0.75, 0, hall);
+  pyramidRoof(3.7, 2.7, 1.2, MAT.roofB, 0, 2.1, 0, hall);
+  box(0.1, 2.8, 0.1, MAT.timber, 1.9, 1.4, 1.3, hall);
+  const ban = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.5), M(0xb5552f, {side:THREE.DoubleSide}));
+  ban.position.set(2.27, 2.45, 1.3); hall.add(ban);
+  bannerRef = ban;
+  world.add(hall);
+  // townhouses
+  house(TOURS.x - 4.6, TOURS.z + 2.6, {w:1.8,d:1.4,h:1.0,rh:0.8});
+  house(TOURS.x - 2.4, TOURS.z + 2.9, {w:1.6,d:1.4,h:1.0,rh:0.8,roof:MAT.roofB});
+  house(TOURS.x + 3.4, TOURS.z + 2.7, {w:1.9,d:1.5,h:1.0,rh:0.8});
+  house(TOURS.x + 5.3, TOURS.z + 1.0, {w:1.5,d:1.5,h:1.0,rh:0.9,roof:MAT.roofB});
+  // wall + great-building footprints for the nav grid (gate gap at |x| < ~2 stays open)
+  OBST.push(
+    { x: TOURS.x, z: TOURS.z - wz, w: wx*2 + 0.5, d: 1.2, rot: 0 },
+    { x: TOURS.x - (wx+1.4)/2 - 0.7, z: TOURS.z + wz, w: wx - 1.4 + 0.5, d: 1.2, rot: 0 },
+    { x: TOURS.x + (wx+1.4)/2 + 0.7, z: TOURS.z + wz, w: wx - 1.4 + 0.5, d: 1.2, rot: 0 },
+    { x: TOURS.x - wx, z: TOURS.z, w: 1.2, d: wz*2 + 0.5, rot: 0 },
+    { x: TOURS.x + wx, z: TOURS.z, w: 1.2, d: wz*2 + 0.5, rot: 0 },
+    { x: TOURS.x - 2.6, z: TOURS.z - 1.3, w: 3.3, d: 5.2, rot: 0 },
+    { x: TOURS.x + 3.1, z: TOURS.z - 1.2, w: 4.0, d: 3.0, rot: 0 });
+}
+// --- MANTHELAN (center-south) ---
+const MAN = {x:0, z:11};
+const churchPos = {x:-2.6, z:10.2};
+{
+  const ch = new THREE.Group(); ch.position.set(churchPos.x, 0, churchPos.z);
+  box(1.9, 1.3, 3.0, MAT.plaster, 0, 0.65, 0, ch);
+  pyramidRoof(2.2, 3.3, 1.0, MAT.roofS, 0, 1.8, 0, ch);
+  box(0.9, 2.3, 0.9, MAT.plaster, 0, 1.15, 1.6, ch);
+  pyramidRoof(1.05, 1.05, 0.95, MAT.roofS, 0, 2.78, 1.6, ch);
+  cross(0, 3.5, 1.6, 0.9, ch);
+  ch.rotation.y = Math.PI/2; // tower faces the road (east)
+  world.add(ch);
+  OBST.push({ x: churchPos.x + 0.28, z: churchPos.z, w: 4.2, d: 2.5, rot: 0 });
+}
+const priestHouse = house(2.9, 11.3, {w:2.0,d:1.6,h:1.1,rh:0.9,roof:MAT.roofB, rot:-0.2});
+house(-3.1, 13.6, {w:1.9,d:1.5,h:1.0,rh:0.85});
+house(3.0, 14.3, {w:1.8,d:1.5,h:1.0,rh:0.8,roof:MAT.roofB});
+house(-2.9, 16.2, {w:1.7,d:1.4,h:1.0,rh:0.8});
+house(2.7, 8.4, {w:1.7,d:1.4,h:1.0,rh:0.8,roof:MAT.roofB, rot:0.3});
+fieldPlot(6.5, 13.5, 3.2, 2.4, 0.1);
+fieldPlot(-6.3, 11.8, 3.0, 2.6, -0.15);
+
+// --- SICHAR'S VILLA (west) ---
+const VILLA = {x:-15.5, z:4.2};
+const villaIntact = new THREE.Group(), villaRuins = new THREE.Group();
+world.add(villaIntact, villaRuins);
+{
+  const mk = (x,z,o)=>{ const h = house(x,z,o); villaIntact.add(h); return h; };
+  mk(VILLA.x, VILLA.z - 1.2, {w:3.2,d:2.2,h:1.5,rh:1.2});                  // main hall
+  mk(VILLA.x - 3.0, VILLA.z + 1.4, {w:1.9,d:1.6,h:1.0,rh:0.85,roof:MAT.roofB,rot:0.35}); // barn
+  mk(VILLA.x + 2.9, VILLA.z + 1.2, {w:1.7,d:1.4,h:0.95,rh:0.8,rot:-0.3});  // servants
+  // ruins (hidden initially): charred low boxes + stumps
+  const charM = M(0x26211c);
+  const r1 = box(3.2, 0.55, 2.2, charM, VILLA.x, 0.27, VILLA.z - 1.2, villaRuins);
+  box(1.9, 0.4, 1.6, charM, VILLA.x - 3.0, 0.2, VILLA.z + 1.4, villaRuins);
+  box(1.7, 0.38, 1.4, charM, VILLA.x + 2.9, 0.19, VILLA.z + 1.2, villaRuins);
+  box(0.16, 1.3, 0.16, charM, VILLA.x - 1.2, 0.65, VILLA.z - 1.9, villaRuins);
+  box(0.16, 1.1, 0.16, charM, VILLA.x + 1.1, 0.55, VILLA.z - 0.6, villaRuins);
+  villaRuins.visible = false;
+}
+fenceRect(VILLA.x + 0.4, VILLA.z + 3.6, 4.4, 2.6);
+const villaSheep = [sheep(VILLA.x - 0.6, VILLA.z + 3.4), sheep(VILLA.x + 0.9, VILLA.z + 4.0), sheep(VILLA.x + 1.6, VILLA.z + 3.1)];
+fieldPlot(VILLA.x - 1.2, VILLA.z - 4.6, 3.6, 2.6, 0.08);
+// hanging post (scene 14)
+const gibbet = new THREE.Group(); gibbet.position.set(VILLA.x + 3.6, 0, VILLA.z + 4.6);
+box(0.14, 2.0, 0.14, MAT.timber, 0, 1.0, 0, gibbet);
+box(0.9, 0.12, 0.12, MAT.timber, 0.35, 1.9, 0, gibbet);
+gibbet.visible = false; world.add(gibbet);
+
+// --- AUNO'S FARMSTEAD / CHRAMNESIND'S HOUSE (east) ---
+const FARM = {x:15.2, z:4.6};
+house(FARM.x, FARM.z - 1.0, {w:2.9,d:2.0,h:1.3,rh:1.1,roof:MAT.roofB});       // Auno's hall
+const chramHouse = house(FARM.x + 3.0, FARM.z + 1.6, {w:2.0,d:1.7,h:1.05,rh:0.9,rot:-0.4}); // Chramnesind's
+house(FARM.x - 3.0, FARM.z + 1.3, {w:1.8,d:1.5,h:1.0,rh:0.85,rot:0.3});
+fenceRect(FARM.x - 0.4, FARM.z + 3.8, 4.2, 2.4);
+const farmSheep = [sheep(FARM.x - 1.2, FARM.z + 3.6), sheep(FARM.x + 0.5, FARM.z + 4.2)];
+fieldPlot(FARM.x + 1.0, FARM.z - 4.4, 3.8, 2.8, -0.06);
+
+// trees
+const SPOTS = [];
+function clearOf(x,z){ return SPOTS.every(s => (x-s[0])**2 + (z-s[1])**2 > 6); }
+[[0,-15.5,9],[0,11,7],[-15.5,4.2,7],[15.2,4.6,7]].forEach(s=>SPOTS.push(s));
+for (let i=0;i<70;i++){
+  const x = (rnd()*2-1)*24, z = (rnd()*2-1)*24;
+  if (Math.abs(x) < 1.6 && z > -20) continue;            // main road
+  if (Math.abs(z-5.6) < 1.4 && Math.abs(x) < 16) continue; // crossroad
+  if (z < -19) continue;                                  // river/Tours area
+  const bad = [[0,-15.5,10],[0,11.5,7],[-15.5,4.2,6],[15.2,4.6,6],[6.5,13.5,3],[-6.3,11.8,3]]
+    .some(s => (x-s[0])**2 + (z-s[1])**2 < s[2]*s[2]);
+  if (bad) continue;
+  tree(x, z, 0.8 + rnd()*0.7);
+}
+// woods on the hillsides
+for (const [hx, hz, r] of HILLS){
+  const n = 7 + Math.floor(rnd()*6);
+  for (let i = 0; i < n; i++){
+    const a = rnd()*Math.PI*2, rr = r*(0.3 + rnd()*0.8);
+    const x = hx + Math.cos(a)*rr, z = hz + Math.sin(a)*rr;
+    if (Math.abs(x) > 25 || Math.abs(z) > 25 || z < -18) continue;
+    if ((x+16.8)**2/(3.9*3.9) + (z-17.8)**2/(2.9*2.9) < 1) continue; // western lake
+    if ((x-8.8)**2/(2.1*2.1) + (z-17)**2/(1.7*1.7) < 1) continue;    // pond
+    tree(x, z, 0.9 + rnd()*0.8);
+  }
+}
+
+/* lakes & ponds */
+const lakeShimmers = [];
+function lakeAt(x, z, rx, rz){
+  const g = new THREE.Group(); g.position.set(x, 0.055, z);
+  const w = new THREE.Mesh(new THREE.CircleGeometry(1, 30), MAT.water);
+  w.rotation.x = -Math.PI/2; w.scale.set(rx, rz, 1); w.receiveShadow = true; g.add(w);
+  const sh = new THREE.Mesh(new THREE.CircleGeometry(1, 30),
+    new THREE.MeshLambertMaterial({ color: 0x8fc2ea, transparent: true, opacity: 0.22, depthWrite: false }));
+  sh.rotation.x = -Math.PI/2; sh.position.y = 0.015; sh.scale.set(rx*0.9, rz*0.9, 1); g.add(sh);
+  world.add(g);
+  lakeShimmers.push({ sh, rx, rz, t: rnd()*6 });
+  // reeds around the rim
+  const reedM = M(0x3a6b35), tipM = M(0x7a5a30);
+  for (let i = 0; i < 12; i++){
+    const a = rnd()*Math.PI*2, rr = 1.04 + rnd()*0.12;
+    const px = x + Math.cos(a)*rx*rr, pz = z + Math.sin(a)*rz*rr;
+    const reed = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.025, 0.34 + rnd()*0.22, 5), reedM);
+    reed.position.set(px, 0.2, pz); reed.rotation.z = (rnd()-0.5)*0.2; world.add(reed);
+    if (rnd() > 0.5){
+      const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.09, 5), tipM);
+      tip.position.set(px, 0.42 + rnd()*0.1, pz); world.add(tip);
+    }
+  }
+  OBST.push({ x, z, w: rx*1.9, d: rz*1.9, rot: 0 });
+}
+lakeAt(-16.8, 17.8, 3.6, 2.6);
+lakeAt(8.8, 17.0, 1.8, 1.4);
+
+/* ============================ navigation grid (collision + A*) ============================ */
+const NAV_RES = 0.5, NAV_MIN = -26, NAV_N = Math.round(52 / NAV_RES);
+const navGrid = new Uint8Array(NAV_N * NAV_N);
+(function buildNav(){
+  for (let iz = 0; iz < NAV_N; iz++) for (let ix = 0; ix < NAV_N; ix++){
+    const x = NAV_MIN + ix * NAV_RES, z = NAV_MIN + iz * NAV_RES;
+    for (const o of OBST){
+      const c = Math.cos(o.rot || 0), s = Math.sin(o.rot || 0);
+      const dx = x - o.x, dz = z - o.z;
+      const lx = dx * c - dz * s, lz = dx * s + dz * c;
+      if (Math.abs(lx) < o.w / 2 && Math.abs(lz) < o.d / 2){ navGrid[iz * NAV_N + ix] = 1; break; }
+    }
+  }
+})();
+const navFree = (ix, iz) => ix >= 0 && iz >= 0 && ix < NAV_N && iz < NAV_N && !navGrid[iz * NAV_N + ix];
+function nearFree(ix, iz){
+  if (navFree(ix, iz)) return [ix, iz];
+  for (let r = 1; r <= 14; r++)
+    for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++){
+      if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+      if (navFree(ix + dx, iz + dz)) return [ix + dx, iz + dz];
+    }
+  return null;
+}
+function losFree(ax, az, bx, bz){
+  const steps = Math.max(1, Math.ceil(Math.hypot(bx - ax, bz - az) / (NAV_RES * 0.5)));
+  for (let i = 0; i <= steps; i++){
+    const x = ax + (bx - ax) * i / steps, z = az + (bz - az) * i / steps;
+    if (!navFree(Math.round((x - NAV_MIN) / NAV_RES), Math.round((z - NAV_MIN) / NAV_RES))) return false;
+  }
+  return true;
+}
+function astar(s, t){
+  const W = NAV_N;
+  const came = new Int32Array(W * W).fill(-1), g = new Float32Array(W * W).fill(1e9);
+  const heap = [];
+  const push = n => { heap.push(n); let i = heap.length - 1;
+    while (i > 0){ const p = (i - 1) >> 1; if (heap[p].f <= heap[i].f) break; [heap[p], heap[i]] = [heap[i], heap[p]]; i = p; } };
+  const pop = () => { const top = heap[0], last = heap.pop();
+    if (heap.length){ heap[0] = last; let i = 0; for (;;){ const l = 2*i+1, r = l+1; let m = i;
+      if (l < heap.length && heap[l].f < heap[m].f) m = l;
+      if (r < heap.length && heap[r].f < heap[m].f) m = r;
+      if (m === i) break; [heap[m], heap[i]] = [heap[i], heap[m]]; i = m; } }
+    return top; };
+  const h = (ix, iz) => Math.hypot(ix - t[0], iz - t[1]);
+  g[s[1] * W + s[0]] = 0; push({ ix: s[0], iz: s[1], f: h(s[0], s[1]) });
+  const DIR = [[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.414],[1,-1,1.414],[-1,1,1.414],[-1,-1,1.414]];
+  let guard = 0;
+  while (heap.length && guard++ < 40000){
+    const n = pop();
+    if (n.ix === t[0] && n.iz === t[1]){
+      const out = []; let ci = n.iz * W + n.ix;
+      while (ci !== -1){ out.push([ci % W, (ci / W) | 0]); ci = came[ci]; }
+      return out.reverse();
+    }
+    const ni = n.iz * W + n.ix;
+    for (const [dx, dz, cost] of DIR){
+      const nx = n.ix + dx, nz = n.iz + dz;
+      if (!navFree(nx, nz)) continue;
+      if (dx && dz && (!navFree(n.ix + dx, n.iz) || !navFree(n.ix, n.iz + dz))) continue; // no corner cutting
+      const i2 = nz * W + nx, ng = g[ni] + cost;
+      if (ng < g[i2]){ g[i2] = ng; came[i2] = ni; push({ ix: nx, iz: nz, f: ng + h(nx, nz) }); }
+    }
+  }
+  return null;
+}
+function findPath(sx, sz, tx, tz){
+  const ci = v => Math.round((v - NAV_MIN) / NAV_RES);
+  const s = nearFree(ci(sx), ci(sz)), t = nearFree(ci(tx), ci(tz));
+  if (!s || !t) return null;
+  const cells = astar(s, t);
+  if (!cells) return null;
+  const pts = cells.map(c => [NAV_MIN + c[0] * NAV_RES, NAV_MIN + c[1] * NAV_RES]);
+  const sm = [pts[0]]; let i = 0;                  // line-of-sight smoothing
+  while (i < pts.length - 1){
+    let j = pts.length - 1;
+    for (; j > i + 1; j--) if (losFree(sm[sm.length - 1][0], sm[sm.length - 1][1], pts[j][0], pts[j][1])) break;
+    sm.push(pts[j]); i = j;
+  }
+  if (losFree(sm[sm.length - 1][0], sm[sm.length - 1][1], tx, tz)) sm.push([tx, tz]);
+  return sm;
+}
+
+/* ============================ location labels ============================ */
+function locLabel(text, x, y, z){
+  const div = document.createElement('div');
+  div.className = 'loctag'; div.textContent = text;
+  const o = new CSS2DObject(div); o.position.set(x, y, z);
+  world.add(o); return o;
+}
+locLabel('TOURS · CIVITAS', TOURS.x, 4.6, TOURS.z - 1);
+locLabel('MANTHELAN · VICUS', 0.2, 4.0, 10.4);
+locLabel("SICHAR'S VILLA", VILLA.x, 3.6, VILLA.z - 1);
+locLabel("AUNO'S FARMSTEAD", FARM.x, 3.6, FARM.z - 1);
+locLabel('→ TO POITIERS', 1.6, 1.6, 22.5);
+
+/* ============================ actors ============================ */
+const SKIN = M(0xe0b08a);
+const STEEL = M(0xd5dae2, {emissive:0x1c2026});
+const SHIELDW = M(0x9a7a4a);
+function person(name, opts={}){
+  const g = new THREE.Group();
+  const tunic = M(opts.color || 0x888888);
+  const hairM = M(opts.hair || 0x4a341e);
+  // legs
+  for (const dx of [-0.09, 0.09]){
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.078, 0.32, 8), M(0x33291c));
+    leg.position.set(dx, 0.16, 0); leg.castShadow = true; g.add(leg);
+  }
+  // tapered tunic + belt
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.165, 0.245, 0.56, 12), tunic);
+  body.position.y = 0.57; body.castShadow = true; g.add(body);
+  const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.215, 0.225, 0.055, 12), M(0x4a341e));
+  belt.position.y = 0.43; g.add(belt);
+  // shoulders
+  const sh1 = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 7), tunic);
+  sh1.position.set(-0.24, 0.8, 0); g.add(sh1);
+  const sh2 = sh1.clone(); sh2.position.x = 0.24; g.add(sh2);
+  // arms pivot at the shoulder so they can swing
+  const armL = new THREE.Group(); armL.position.set(-0.26, 0.78, 0); g.add(armL);
+  const la = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.058, 0.34, 8), tunic);
+  la.position.y = -0.17; la.castShadow = true; armL.add(la);
+  const lh = new THREE.Mesh(new THREE.SphereGeometry(0.052, 7, 6), SKIN);
+  lh.position.y = -0.35; armL.add(lh);
+  const armR = new THREE.Group(); armR.position.set(0.26, 0.78, 0); g.add(armR);
+  const ra = la.clone(); armR.add(ra);
+  const rh = lh.clone(); armR.add(rh);
+  // sword in the right hand (hidden until armed)
+  const sword = new THREE.Group(); sword.position.set(0, -0.34, 0.05);
+  box(0.05, 0.05, 0.46, STEEL, 0, 0, 0.32, sword);
+  box(0.16, 0.05, 0.05, MAT.timber, 0, 0, 0.07, sword);
+  sword.visible = false; armR.add(sword);
+  // round shield on the left arm (hidden until armed)
+  const shield = new THREE.Group(); shield.position.set(0, -0.3, 0.12);
+  const sh = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.05, 10), SHIELDW);
+  sh.rotation.x = Math.PI/2; sh.castShadow = true; shield.add(sh);
+  const boss = new THREE.Mesh(new THREE.SphereGeometry(0.08, 6, 5), STEEL);
+  boss.position.z = 0.04; shield.add(boss);
+  shield.visible = false; armL.add(shield);
+  // rounded head with a face (forward = +z, matching faceToward)
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.165, 16, 13), SKIN);
+  head.scale.set(0.95, 1.1, 0.92); head.position.y = 1.0; head.castShadow = true; g.add(head);
+  const eyeM = M(0x1d1712);
+  for (const dx of [-0.062, 0.062]){
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.021, 7, 6), eyeM);
+    eye.position.set(dx, 1.03, 0.132); g.add(eye);
+    const brow = box(0.056, 0.016, 0.015, hairM, dx, 1.077, 0.135, g);
+    brow.castShadow = false;
+  }
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.024, 6, 6), M(0xd09a72));
+  nose.position.set(0, 0.99, 0.152); g.add(nose);
+  const mouth = box(0.052, 0.013, 0.012, M(0x8a4a3a), 0, 0.94, 0.142, g);
+  mouth.castShadow = false;
+  if (opts.beard){
+    const bd = new THREE.Mesh(new THREE.SphereGeometry(0.1, 9, 7), M(opts.beard));
+    bd.scale.set(1.05, 0.85, 0.62); bd.position.set(0, 0.9, 0.07); bd.castShadow = false; g.add(bd);
+  }
+  // hair / headgear
+  if (opts.mitre){
+    const c = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.4, 6), M(0xf2eada));
+    c.position.y = 1.32; c.castShadow = true; g.add(c);
+  } else if (opts.crown){
+    const cr = new THREE.Mesh(new THREE.TorusGeometry(0.125, 0.034, 6, 14), MAT.gold);
+    cr.rotation.x = Math.PI/2; cr.position.y = 1.13; g.add(cr);
+  } else if (opts.tonsure){
+    const tn = new THREE.Mesh(new THREE.TorusGeometry(0.122, 0.05, 6, 14), M(0x6b5230));
+    tn.rotation.x = Math.PI/2; tn.position.y = 1.1; g.add(tn);
+  } else {
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.175, 14, 10, 0, Math.PI*2, 0, 1.5), hairM);
+    cap.scale.set(0.97, 1.05, 0.95); cap.position.set(0, 1.01, -0.012); g.add(cap);
+  }
+  if (opts.small) g.scale.setScalar(0.85);
+  const div = document.createElement('div');
+  div.className = 'tag ' + (opts.tag || 'gray'); div.textContent = name;
+  const lab = new CSS2DObject(div); lab.position.set(0, 1.75, 0); g.add(lab);
+  g.userData = { name, label: div, baseY: 0, dead: false, armL, armR, sword, shield };
+  world.add(g);
+  return g;
+}
+function armActor(a, sword=true, shield=true){
+  a.userData.sword.visible = sword;
+  a.userData.shield.visible = shield;
+  a.userData.armR.rotation.x = sword ? -0.45 : 0;
+  a.userData.armL.rotation.x = shield ? -0.35 : 0;
+}
+function disarmActor(a){
+  a.userData.sword.visible = false;
+  a.userData.shield.visible = false;
+  a.userData.armR.rotation.x = 0;
+  a.userData.armL.rotation.x = 0;
+}
+const A = {
+  sichar:  person('SICHAR', {color:0xb02e22, tag:'red'}),
+  chram:   person('CHRAMNESIND', {color:0x2e5fb0, tag:'blue'}),
+  austre:  person('AUSTREGISEL', {color:0x3c7a35, tag:'green', beard:0x2e2418}),
+  priest:  person('THE PRIEST', {color:0x8a6b43, tag:'gold', tonsure:true}),
+  servant: person("PRIEST'S SERVANT", {color:0xc9b07e, tag:'gold', small:true}),
+  gregory: person('BISHOP GREGORY', {color:0x6b3fa0, tag:'gold', mitre:true, beard:0xd8d8d8}),
+  auno:    person('AUNO', {color:0x4a6e8a, tag:'blue', hair:0x999999, beard:0x9a9a9a}),
+  aunoSon: person("AUNO'S SON", {color:0x5f88c9, tag:'blue', small:true}),
+  eberulf: person('EBERULF', {color:0x3f7a78, tag:'blue', beard:0x42453a}),
+  audinus: person('AUDINUS', {color:0xc77b3a, tag:'red', beard:0x5a4028}),
+  judge:   person('THE COUNT', {color:0x806020, tag:'gray', beard:0x6e5a3a}),
+  tranq:   person('TRANQUILLA', {color:0xc98ab0, tag:'red', hair:0x2e2018}),
+  king:    person('KING CHILDEBERT II', {color:0x9a3fb0, tag:'gold', crown:true, beard:0x4a341e}),
+  sMan1:   person("SICHAR'S MAN", {color:0xa05545, tag:'red', small:true}),
+  sMan2:   person("SICHAR'S MAN", {color:0x96402f, tag:'red', small:true}),
+  aMan1:   person("AUSTREGISEL'S MAN", {color:0x55803f, tag:'green', small:true}),
+  aMan2:   person("AUSTREGISEL'S MAN", {color:0x47703a, tag:'green', small:true}),
+  cKin1:   person("CHRAMNESIND'S KIN", {color:0x3a6fa8, tag:'blue', small:true}),
+  cKin2:   person("CHRAMNESIND'S KIN", {color:0x2f5e96, tag:'blue', small:true}),
+  puer1:   person('SERVANT', {color:0xb09a70, tag:'gray', small:true}),
+  puer2:   person('SERVANT', {color:0xa8946a, tag:'gray', small:true}),
+  puer3:   person('SERVANT', {color:0x9e8a62, tag:'gray', small:true}),
+  puer4:   person('SERVANT', {color:0x968258, tag:'gray', small:true}),
+};
+/* low-poly horses: pooled, mounted during fast rides */
+const horsePool = [];
+function makeHorse(){
+  const coats = [0x6e4a2a, 0x4a3520, 0x8a6a48, 0x3a2e22];
+  const mat = M(coats[Math.floor(rnd()*coats.length)]), dark = M(0x2e2418);
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.74, 10), mat);
+  body.rotation.x = Math.PI/2; body.position.set(0, 0.6, 0); body.castShadow = true; g.add(body);
+  const chest = new THREE.Mesh(new THREE.SphereGeometry(0.21, 9, 7), mat);
+  chest.position.set(0, 0.6, 0.36); chest.castShadow = true; g.add(chest);
+  const rump = chest.clone(); rump.position.z = -0.34; g.add(rump);
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.13, 0.42, 8), mat);
+  neck.position.set(0, 0.86, 0.46); neck.rotation.x = -0.65; neck.castShadow = true; g.add(neck);
+  const hd = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.09, 0.3, 8), mat);
+  hd.position.set(0, 1.04, 0.66); hd.rotation.x = -1.3; hd.castShadow = true; g.add(hd);
+  for (const ex of [-0.05, 0.05]){
+    const ear = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.07, 5), dark);
+    ear.position.set(ex, 1.16, 0.6); g.add(ear);
+  }
+  const mane = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.36, 0.1), dark);
+  mane.position.set(0, 0.95, 0.38); mane.rotation.x = -0.65; g.add(mane);
+  const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.012, 0.44, 6), dark);
+  tail.position.set(0, 0.52, -0.58); tail.rotation.x = 0.65; g.add(tail);
+  const legs = [];
+  for (const [lx, lz] of [[-0.12, 0.3], [0.12, 0.3], [-0.12, -0.28], [0.12, -0.28]]){
+    const lp = new THREE.Group(); lp.position.set(lx, 0.52, lz);
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.048, 0.52, 6), dark);
+    leg.position.y = -0.26; leg.castShadow = true; lp.add(leg);
+    g.add(lp); legs.push(lp);
+  }
+  g.visible = false;
+  world.add(g);
+  return { g, legs };
+}
+const acquireHorse = () => horsePool.pop() || makeHorse();
+const releaseHorse = h => { h.g.visible = false; horsePool.push(h); };
+
+// hanged figure (separate static prop, reuses Sichar colors)
+const hangedBody = new THREE.Group();
+{
+  box(0.4, 0.5, 0.26, M(0x7e655f), 0, -0.25, 0, hangedBody);
+  box(0.27, 0.25, 0.23, M(0xc9a183), 0, 0.15, 0, hangedBody);
+  hangedBody.position.set(0.7, 1.55, 0); hangedBody.rotation.z = 0.12;
+  gibbet.add(hangedBody);
+}
+
+/* ============================ FX ============================ */
+function glowTexture(inner, outer){
+  const cv = document.createElement('canvas'); cv.width = cv.height = 64;
+  const ctx = cv.getContext('2d');
+  const gr = ctx.createRadialGradient(32,32,2,32,32,30);
+  gr.addColorStop(0, inner); gr.addColorStop(1, outer);
+  ctx.fillStyle = gr; ctx.fillRect(0,0,64,64);
+  return new THREE.CanvasTexture(cv);
+}
+const TEX_FIRE  = glowTexture('rgba(255,240,180,1)', 'rgba(255,80,0,0)');
+const TEX_SMOKE = glowTexture('rgba(90,90,95,0.85)', 'rgba(90,90,95,0)');
+const TEX_SPARK = glowTexture('rgba(255,255,220,1)', 'rgba(255,210,60,0)');
+const TEX_SNOW  = glowTexture('rgba(255,255,255,1)', 'rgba(255,255,255,0)');
+
+const updatables = new Set();
+class FireFx {
+  constructor(x, z, scale=1){
+    this.g = new THREE.Group(); this.g.position.set(x, 0, z);
+    this.parts = [];
+    for (let i=0;i<33;i++){
+      const kind = i < 16 ? 'fire' : i < 26 ? 'smoke' : 'ember';
+      const mat = new THREE.SpriteMaterial({ map: kind==='smoke'?TEX_SMOKE:TEX_FIRE, transparent:true, depthWrite:false,
+        blending: kind==='smoke'?THREE.NormalBlending:THREE.AdditiveBlending });
+      const s = new THREE.Sprite(mat);
+      this.parts.push({ s, kind, t: rnd(), spd: kind==='ember' ? 0.8+rnd()*0.9 : 0.45+rnd()*0.75,
+        ox:(rnd()-0.5)*1.7*scale, oz:(rnd()-0.5)*1.2*scale, wob: rnd()*6.28 });
+      this.g.add(s);
+    }
+    this.scale = scale; this.alive = true;
+    world.add(this.g); updatables.add(this);
+    activeFires.push(this);
+  }
+  update(dt){
+    for (const p of this.parts){
+      p.t += dt * p.spd; if (p.t > 1) p.t -= 1;
+      const k = p.t;
+      if (p.kind === 'fire'){
+        p.s.position.set(p.ox + Math.sin(k*9 + p.wob)*0.1, 0.15 + k*2.0*this.scale, p.oz);
+        const sc = (1.3 - k*0.8) * this.scale * (1.15 + 0.3*Math.sin(k*52 + p.wob));
+        p.s.scale.set(sc, sc*1.55, 1);
+        p.s.material.opacity = 1 - k;
+      } else if (p.kind === 'ember'){
+        p.s.position.set(p.ox + Math.sin(k*15 + p.wob)*0.35, 0.5 + k*3.8*this.scale, p.oz + Math.cos(k*12 + p.wob)*0.25);
+        const sc = 0.17 * this.scale * (1 - k*0.5);
+        p.s.scale.set(sc, sc, 1);
+        p.s.material.opacity = (1-k) * (0.6 + 0.4*Math.sin(k*60 + p.wob));
+      } else {
+        p.s.position.set(p.ox + k*1.6 + Math.sin(k*5 + p.wob)*0.3, 1.3 + k*4.8*this.scale, p.oz);
+        const sc = (1.0 + k*3.0) * this.scale;
+        p.s.scale.set(sc, sc, 1);
+        p.s.material.opacity = (1-k) * 0.62;
+      }
+    }
+  }
+  dispose(){ this.alive = false; updatables.delete(this); world.remove(this.g); }
+}
+let activeFires = [];
+function clearFires(){ activeFires.forEach(f=>f.dispose()); activeFires = []; fireLight.intensity = 0; }
+
+function spark(x, y, z){
+  SFX.clang();
+  const mat = new THREE.SpriteMaterial({ map: TEX_SPARK, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending });
+  const s = new THREE.Sprite(mat); s.position.set(x, y, z);
+  world.add(s);
+  const fx = { t: 0, update(dt){ this.t += dt*3; const k = this.t;
+    s.scale.setScalar(0.4 + k*1.2); mat.opacity = Math.max(0, 1-k);
+    if (k >= 1){ updatables.delete(this); world.remove(s); } } };
+  updatables.add(fx);
+}
+const bloodDiscs = [];
+function bloodAt(x, z){
+  const m = new THREE.Mesh(new THREE.CircleGeometry(0.34, 10), MAT.blood);
+  m.rotation.x = -Math.PI/2; m.position.set(x, 0.045, z);
+  world.add(m); bloodDiscs.push(m);
+}
+function clearBlood(){ bloodDiscs.forEach(b=>world.remove(b)); bloodDiscs.length = 0; }
+
+// snow
+let snowOn = false;
+// NOTE: with an orthographic camera, size-attenuated points collapse to sub-pixel size,
+// so both particle systems use screen-pixel sizing (sizeAttenuation: false).
+const snow = (() => {
+  const N = 900, geo = new THREE.BufferGeometry(), pos = new Float32Array(N*3), vel = [];
+  for (let i=0;i<N;i++){ pos[i*3] = (rnd()*2-1)*26; pos[i*3+1] = rnd()*14; pos[i*3+2] = (rnd()*2-1)*26; vel.push(0.7+rnd()*0.9); }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pts = new THREE.Points(geo, new THREE.PointsMaterial({
+    size: 4.5, sizeAttenuation: false, map: TEX_SNOW, transparent: true, opacity: 0.95, depthWrite: false }));
+  pts.visible = false; scene.add(pts);
+  updatables.add({ update(dt){
+    if (!pts.visible) return;
+    const a = geo.attributes.position.array;
+    for (let i=0;i<N;i++){
+      a[i*3+1] -= vel[i]*dt; if (a[i*3+1] < 0) a[i*3+1] = 14;
+      a[i*3] += dt * (0.9 + 0.5*Math.sin(windT + i)); if (a[i*3] > 26) a[i*3] = -26;
+    }
+    geo.attributes.position.needsUpdate = true;
+  }});
+  return pts;
+})();
+
+// rain
+const rainPts = (() => {
+  const N = 1100, geo = new THREE.BufferGeometry(), pos = new Float32Array(N*3), vel = [];
+  for (let i=0;i<N;i++){ pos[i*3] = (rnd()*2-1)*26; pos[i*3+1] = rnd()*16; pos[i*3+2] = (rnd()*2-1)*26; vel.push(13+rnd()*7); }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pts = new THREE.Points(geo, new THREE.PointsMaterial({
+    size: 2.6, sizeAttenuation: false, map: TEX_SNOW, color: 0x9ab4d8, transparent: true, opacity: 0.6, depthWrite: false }));
+  pts.visible = false; scene.add(pts);
+  updatables.add({ update(dt){
+    if (!pts.visible) return;
+    const a = geo.attributes.position.array;
+    for (let i=0;i<N;i++){
+      a[i*3+1] -= vel[i]*dt; if (a[i*3+1] < 0) a[i*3+1] = 16;
+      a[i*3] += dt * 1.6; if (a[i*3] > 26) a[i*3] = -26;
+    }
+    geo.attributes.position.needsUpdate = true;
+  }});
+  return pts;
+})();
+
+/* ============================ wildlife, sky & wind ============================ */
+// wind: sways tree crowns, flutters the banner
+updatables.add({ update(dt){
+  windT += dt;
+  for (let i = 0; i < WINDY.length; i++){
+    const c = WINDY[i];
+    c.rotation.z = Math.sin(windT*1.4 + i*1.7) * 0.05;
+    c.rotation.x = Math.cos(windT*1.1 + i*2.3) * 0.035;
+  }
+  if (bannerRef) bannerRef.rotation.y = Math.sin(windT*4) * 0.3;
+  for (const L of lakeShimmers){
+    L.sh.material.opacity = 0.15 + 0.1 * Math.sin(windT*0.9 + L.t);
+    const p = 0.9 + 0.03 * Math.sin(windT*0.6 + L.t*2);
+    L.sh.scale.set(L.rx*p, L.rz*p, 1);
+  }
+}});
+
+// deer grazing on the hillsides
+const wildlife = [];
+function deer(x, z){
+  const g = new THREE.Group();
+  box(0.62, 0.34, 0.26, M(0x8a5f38), 0, 0.62, 0, g);
+  box(0.2, 0.22, 0.2, M(0x8a5f38), 0.36, 0.84, 0, g);
+  box(0.05, 0.2, 0.14, M(0x4a341e), 0.42, 1.02, 0, g);
+  for (const dz of [-0.08, 0.08]) for (const dx of [-0.2, 0.2]) box(0.06, 0.45, 0.06, M(0x6e4a2a), dx, 0.22, dz, g);
+  g.position.set(x, terrainY(x, z), z);
+  world.add(g);
+  wildlife.push({ g, home: [x, z], target: null, pause: rnd()*3 });
+}
+deer(-19.5, -8); deer(-21, 13); deer(19.5, 14.5); deer(20.5, -6); deer(10, 21);
+updatables.add({ update(dt){
+  for (const w of wildlife){
+    if (w.pause > 0){ w.pause -= dt; continue; }
+    if (!w.target){
+      const a = rnd()*Math.PI*2, r = 1.5 + rnd()*3.5;
+      const tx = w.home[0] + Math.cos(a)*r, tz = w.home[1] + Math.sin(a)*r;
+      if (Math.abs(tx) > 24.5 || Math.abs(tz) > 24.5 || !losFree(w.g.position.x, w.g.position.z, tx, tz)){ w.pause = 0.6; continue; }
+      w.target = [tx, tz];
+      w.g.rotation.y = Math.atan2(tx - w.g.position.x, tz - w.g.position.z);
+    }
+    const dx = w.target[0] - w.g.position.x, dz = w.target[1] - w.g.position.z;
+    const d = Math.hypot(dx, dz);
+    if (d < 0.12){ w.target = null; w.pause = 2 + rnd()*5; continue; }
+    const sp = 0.9 * dt;
+    w.g.position.x += dx/d*sp; w.g.position.z += dz/d*sp;
+    w.g.position.y = terrainY(w.g.position.x, w.g.position.z) + Math.abs(Math.sin(windT*7)) * 0.03;
+  }
+}});
+
+// birds circling overhead
+const flocks = [];
+{
+  const birdMat = M(0x2e2a26);
+  for (let f = 0; f < 2; f++){
+    const members = [];
+    for (let i = 0; i < 4; i++){
+      const b = new THREE.Group();
+      const w1 = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.02, 0.12), birdMat);
+      w1.position.x = -0.2; w1.castShadow = true; b.add(w1);
+      const w2 = w1.clone(); w2.position.x = 0.2; b.add(w2);
+      scene.add(b); members.push(b);
+    }
+    flocks.push({ members, ang: rnd()*6.28, cx: f ? -10 : 12, cz: f ? -2 : 11, r: 6 + f*3, spd: 0.22 + f*0.09, h: 9 + f*2.5 });
+  }
+  updatables.add({ update(dt){
+    for (const fl of flocks){
+      fl.ang += dt * fl.spd;
+      fl.members.forEach((b, i) => {
+        const a = fl.ang - i*0.16;
+        b.position.set(fl.cx + Math.cos(a)*fl.r, fl.h + Math.sin(fl.ang*2 + i)*0.4, fl.cz + Math.sin(a)*fl.r);
+        b.rotation.y = -a;
+        const flap = Math.sin(windT*12 + i*2) * 0.55;
+        b.children[0].rotation.z = flap;
+        b.children[1].rotation.z = -flap;
+      });
+    }
+  }});
+}
+
+// drifting clouds (they cast moving shadows over the land)
+const clouds = [];
+{
+  const cm = new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x8a929c, emissiveIntensity: 0.3 });
+  for (let i = 0; i < 5; i++){
+    const g = new THREE.Group();
+    const n = 3 + Math.floor(rnd()*3);
+    for (let j = 0; j < n; j++){
+      const s = new THREE.Mesh(new THREE.SphereGeometry(1.1 + rnd()*1.2, 7, 5), cm);
+      s.scale.y = 0.45;
+      s.position.set(j*1.4 - n*0.7 + rnd(), (rnd()-0.5)*0.4, (rnd()-0.5)*1.8);
+      s.castShadow = true;
+      g.add(s);
+    }
+    g.position.set((rnd()*2-1)*26, 13.5 + rnd()*3.5, (rnd()*2-1)*20);
+    scene.add(g);
+    clouds.push({ g, spd: 0.22 + rnd()*0.3 });
+  }
+  updatables.add({ update(dt){
+    for (const c of clouds){ c.g.position.x += dt * c.spd; if (c.g.position.x > 32) c.g.position.x = -32; }
+  }});
+}
+
+/* ============================ sound (procedural WebAudio) ============================ */
+const SFX = (() => {
+  let ctx = null, master = null, muted = false, noiseBuf = null;
+  let windG = null, rainG = null, fireG = null, cricketG = null;
+  function makeNoise(){
+    const b = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  }
+  function loop(type, freq, q, g0){
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    const f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+    const g = ctx.createGain(); g.gain.value = g0;
+    src.connect(f); f.connect(g); g.connect(master); src.start();
+    return g;
+  }
+  function ping(freqs, dur, vol, type){
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    freqs.forEach((fr, i) => {
+      const o = ctx.createOscillator(); o.type = type || 'triangle'; o.frequency.value = fr;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(vol / (i + 1), t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.05);
+    });
+  }
+  function burst(f0, f1, dur, vol, ftype){
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf;
+    const f = ctx.createBiquadFilter(); f.type = ftype || 'bandpass'; f.Q.value = 1;
+    f.frequency.setValueAtTime(Math.max(40, f0), t);
+    f.frequency.exponentialRampToValueAtTime(Math.max(40, f1), t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f); f.connect(g); g.connect(master); src.start(t); src.stop(t + dur + 0.05);
+  }
+  /* ElevenLabs-generated samples (sfx/*.mp3); procedural synthesis remains as fallback */
+  const FILES = {
+    bell: 'sfx/bell.mp3', clang: 'sfx/clang.mp3', thud: 'sfx/thud.mp3',
+    whoosh: 'sfx/whoosh.mp3', coin: 'sfx/coin.mp3',
+    fire: 'sfx/fire_loop.mp3', wind: 'sfx/wind_loop.mp3', rain: 'sfx/rain_loop.mp3',
+    crickets: 'sfx/crickets_loop.mp3', birds: 'sfx/birds_loop.mp3', gallop: 'sfx/gallop_loop.mp3',
+    m_intro: 'sfx/m_intro.mp3', m_tension: 'sfx/m_tension.mp3', m_sorrow: 'sfx/m_sorrow.mp3',
+  };
+  const LOOPS = ['fire', 'wind', 'rain', 'crickets', 'birds', 'gallop', 'm_intro', 'm_tension', 'm_sorrow'];
+  /* ElevenLabs character voices, keyed by the exact bubble text */
+  const VOICEK = {
+    'Boy — go bid the men come drink at my house, for the feast!': 'v_priest_invite',
+    'The priest invites you to drink, good sirs!': 'v_servant_invite',
+    'Austregisel! Answer for the boy\'s blood!': 'v_sichar_challenge',
+    'The silver is mine now.': 'v_austre_silver',
+    'Austregisel: homicide. Let him bear the censure of the law!': 'v_judge_verdict',
+    'My silver sits in Auno\'s hall. We ride tonight.': 'v_sichar_ride',
+    'Father…!': 'v_chram_father',
+    'Cease, O men! Blessed are the peacemakers — let the Church\'s silver pay, that no soul be lost!': 'v_gregory_peace',
+    'No silver weighs against my father\'s blood. I refuse.': 'v_chram_refuse',
+    'Work, dog! (strikes him with his rod)': 'v_sichar_dog',
+    'No more blows, master!': 'v_puer_blows',
+    'Sichar dead, and not by my hand? Then his roof will pay. Ride!': 'v_chram_roof',
+    'He who burned houses forfeits half the price. The Church pays the rest. Swear the oaths!': 'v_judge_oaths',
+    'I swear it.': 'v_sichar_swear',
+    'And I.': 'v_chram_swear',
+    'Brother! Another cup!': 'v_sichar_cup',
+    'For you, sweet friend — always.': 'v_chram_friend',
+    'Thank me, sweet brother! I slew your kin — and the gold for it fills this very house!': 'v_sichar_boast',
+    '(in his heart) Avenge them — or be called a weak woman.': 'v_chram_heart',
+    'I beg my life, O glorious king! They slew my kin and stripped my house!': 'v_chram_beg',
+    'The queen held Sichar in her word. Get you gone — and prove your cause.': 'v_king_gone',
+  };
+  Object.values(VOICEK).forEach(k => { FILES[k] = 'sfx/voice/' + k + '.mp3'; });
+  const buf = {}, loopG = {};
+  let gallopN = 0;
+  function playBuf(k, vol, rate){
+    if (!ctx || !buf[k]) return false;
+    const s = ctx.createBufferSource(); s.buffer = buf[k];
+    s.playbackRate.value = rate || 1;
+    const g = ctx.createGain(); g.gain.value = vol;
+    s.connect(g); g.connect(master); s.start();
+    return true;
+  }
+  return {
+    get on(){ return !!ctx; },
+    start(){
+      if (ctx) return;
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return; }
+      master = ctx.createGain(); master.gain.value = muted ? 0 : 0.5; master.connect(ctx.destination);
+      noiseBuf = makeNoise();
+      windG = loop('lowpass', 320, 0.5, 0.02);
+      rainG = loop('bandpass', 2600, 0.4, 0);
+      fireG = loop('lowpass', 700, 1.4, 0);
+      const co = ctx.createOscillator(); co.type = 'sine'; co.frequency.value = 4300;
+      const am = ctx.createOscillator(); am.frequency.value = 23;
+      const amg = ctx.createGain(); amg.gain.value = 0.5; am.connect(amg.gain);
+      cricketG = ctx.createGain(); cricketG.gain.value = 0;
+      co.connect(amg); amg.connect(cricketG); cricketG.connect(master);
+      co.start(); am.start();
+      const self = this;
+      Object.entries(FILES).forEach(([k, url]) => {
+        fetch(url).then(r => r.ok ? r.arrayBuffer() : Promise.reject(new Error(url)))
+          .then(ab => ctx.decodeAudioData(ab))
+          .then(b => {
+            buf[k] = b;
+            if (LOOPS.includes(k)){
+              const src = ctx.createBufferSource(); src.buffer = b; src.loop = true;
+              const g = ctx.createGain(); g.gain.value = 0;
+              src.connect(g); g.connect(master); src.start();
+              loopG[k] = g;
+              self.ambience();
+              if (k.startsWith('m_')) self.music(self._music || null);
+            }
+          })
+          .catch(() => {}); // missing file → procedural fallback stays active
+      });
+      this.ambience();
+    },
+    toggleMute(){ muted = !muted; if (master) master.gain.value = muted ? 0 : 0.5; return muted; },
+    ambience(){
+      if (!ctx) return;
+      const t = ctx.currentTime, day = hour > 6.5 && hour < 19;
+      const set = (g, v) => g && g.gain.setTargetAtTime(v, t, 0.8);
+      set(loopG.wind, weatherNow === 'snow' ? 0.09 : weatherNow === 'rain' ? 0.04 : 0.018);
+      set(windG, loopG.wind ? 0 : (weatherNow === 'snow' ? 0.06 : weatherNow === 'rain' ? 0.03 : 0.012));
+      set(loopG.rain, weatherNow === 'rain' ? 0.30 : 0);
+      set(rainG, loopG.rain ? 0 : (weatherNow === 'rain' ? 0.09 : 0));
+      set(loopG.crickets, (!day && weatherNow !== 'snow') ? 0.16 : 0);
+      set(cricketG, loopG.crickets ? 0 : ((!day && weatherNow !== 'snow') ? 0.02 : 0));
+      set(loopG.birds, (day && weatherNow !== 'rain' && weatherNow !== 'snow') ? 0.14 : 0);
+    },
+    fireLevel(n){
+      if (!ctx) return;
+      if (loopG.fire) loopG.fire.gain.setTargetAtTime(Math.min(0.5, n * 0.18), ctx.currentTime, 0.4);
+      else if (fireG) fireG.gain.setTargetAtTime(Math.min(0.22, n * 0.08), ctx.currentTime, 0.4);
+    },
+    gallop(on){
+      gallopN = Math.max(0, gallopN + (on ? 1 : -1));
+      if (loopG.gallop) loopG.gallop.gain.setTargetAtTime(gallopN ? 0.28 : 0, ctx.currentTime, 0.25);
+    },
+    clang(){
+      if (playBuf('clang', 0.5, 0.9 + Math.random()*0.22)) return;
+      ping([2400, 3160, 4150], 0.16, 0.08, 'square'); burst(6500, 2500, 0.09, 0.10, 'highpass');
+    },
+    thud(){
+      if (playBuf('thud', 0.7, 0.95 + Math.random()*0.1)) return;
+      ping([110, 55], 0.3, 0.22, 'sine'); burst(420, 80, 0.18, 0.18, 'lowpass');
+    },
+    bell(n){
+      if (!ctx) return;
+      for (let i = 0; i < (n || 1); i++)
+        setTimeout(() => {
+          if (playBuf('bell', 0.6, 0.98 + Math.random()*0.04)) return;
+          ping([196, 392, 523, 661], 2.4, 0.10, 'sine');
+        }, i * 1600);
+    },
+    whoosh(){
+      if (playBuf('whoosh', 0.55)) return;
+      burst(300, 2600, 0.45, 0.14);
+    },
+    coin(){
+      if (playBuf('coin', 0.6)) return;
+      ping([2620], 0.12, 0.09, 'sine'); setTimeout(() => ping([3520], 0.14, 0.09, 'sine'), 90);
+    },
+    blip(){ if (!ctx || muted) return; ping([1320 + Math.random()*240], 0.045, 0.025, 'square'); },
+    music(name){ // 'intro' | 'tension' | 'sorrow' | null — low-volume bed, crossfaded
+      this._music = name;
+      if (!ctx) return;
+      for (const k of ['m_intro', 'm_tension', 'm_sorrow']){
+        const g = loopG[k];
+        if (!g) continue;
+        const on = name && k === 'm_' + name;
+        g.gain.setTargetAtTime(on ? (k === 'm_intro' ? 0.17 : 0.09) : 0, ctx.currentTime, 1.1);
+      }
+    },
+    say(text){
+      const k = VOICEK[text];
+      if (!k || !buf[k]) return 0;
+      playBuf(k, 0.95);
+      return buf[k].duration;
+    },
+    chirp(){
+      if (!ctx || muted || loopG.birds) return;
+      const t = ctx.currentTime, fr = 2200 + Math.random() * 1800;
+      const o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(fr, t);
+      o.frequency.exponentialRampToValueAtTime(fr * 0.7, t + 0.12);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(0.04, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+      o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.2);
+    },
+  };
+})();
+// birdsong scheduler (sim-time driven, so it pauses with the game)
+updatables.add({ t: 2, update(dt){
+  this.t -= dt;
+  if (this.t <= 0){
+    this.t = 1.6 + rnd() * 3;
+    if (hour > 6 && hour < 19 && weatherNow !== 'rain' && weatherNow !== 'snow') SFX.chirp();
+  }
+}});
+
+/* ============================ time engine ============================ */
+let speed = 1, paused = false, slowmoN = 0;
+const timers = new Set(), tweens = new Set();
+function timeScale(){ return paused ? 0 : speed * (slowmoN > 0 ? 0.28 : 1); }
+async function withSlowmo(p){ slowmoN++; try { return await p; } finally { slowmoN--; } }
+function wait(ms, sig){
+  return new Promise((res, rej) => timers.add({ left: ms, res, rej, sig }));
+}
+function tween(dur, fn, sig, ease){
+  ease = ease || (k => k<.5 ? 2*k*k : 1-((-2*k+2)**2)/2);
+  return new Promise((res, rej) => tweens.add({ t: 0, dur, fn, res, rej, sig, ease }));
+}
+function stepEngine(rawDt){
+  const dt = rawDt * timeScale();
+  for (const tm of [...timers]){
+    if (tm.sig && tm.sig.aborted){ timers.delete(tm); tm.rej(ABORT); continue; }
+    tm.left -= rawDt * timeScale() * 1000;
+    if (tm.left <= 0){ timers.delete(tm); tm.res(); }
+  }
+  for (const tw of [...tweens]){
+    if (tw.sig && tw.sig.aborted){ tweens.delete(tw); tw.rej(ABORT); continue; }
+    tw.t += rawDt * timeScale() * 1000;
+    const k = Math.min(1, tw.t / tw.dur);
+    try { tw.fn(tw.ease(k), k); } catch(e){ console.error(e); }
+    if (k >= 1){ tweens.delete(tw); tw.res(); }
+  }
+  for (const u of [...updatables]) u.update(dt);
+  if (activeFires.length){
+    fireLight.intensity = 3.6 + Math.sin(performance.now()*0.023)*1.3 + Math.sin(performance.now()*0.011)*0.5;
+    fireLight.position.set(activeFires[0].g.position.x, 2.5, activeFires[0].g.position.z);
+  }
+  if (activeFires.length !== lastFireN){ lastFireN = activeFires.length; if (SFX.on) SFX.fireLevel(lastFireN); }
+}
+let lastFireN = 0;
+
+/* ============================ actor helpers ============================ */
+function faceToward(a, x, z){
+  const dx = x - a.position.x, dz = z - a.position.z;
+  if (Math.abs(dx) + Math.abs(dz) > 0.001) a.rotation.y = Math.atan2(dx, dz);
+}
+async function walk(a, x, z, sig, speedTiles=3){
+  const sx = a.position.x, sz = a.position.z;
+  const route = findPath(sx, sz, x, z) || [[x, z]];     // routed around buildings; direct as fallback
+  const path = [[sx, sz], ...route];
+  const segs = []; let total = 0;
+  for (let i = 1; i < path.length; i++){
+    const L = Math.hypot(path[i][0] - path[i-1][0], path[i][1] - path[i-1][1]);
+    if (L < 0.02) continue;
+    segs.push({ a: path[i-1], b: path[i], L, acc: total }); total += L;
+  }
+  if (!segs.length) return;
+  const dur = total / speedTiles * 1000;
+  const riding = speedTiles >= 6;
+  let horse = null;
+  if (riding){ SFX.gallop(true); horse = acquireHorse(); horse.g.visible = true; }
+  let si = 0;
+  await tween(dur, (k, lin) => {
+    const s = lin * total;
+    while (si < segs.length - 1 && s > segs[si].acc + segs[si].L) si++;
+    while (si > 0 && s < segs[si].acc) si--;
+    const seg = segs[si], u = Math.min(1, Math.max(0, (s - seg.acc) / seg.L));
+    a.position.x = seg.a[0] + (seg.b[0] - seg.a[0]) * u;
+    a.position.z = seg.a[1] + (seg.b[1] - seg.a[1]) * u;
+    faceToward(a, seg.b[0], seg.b[1]);
+    if (horse){
+      horse.g.position.set(a.position.x, 0, a.position.z);
+      horse.g.rotation.y = a.rotation.y;
+      const ph = lin * total * 2.4;
+      horse.legs.forEach((lp, j) => {
+        lp.rotation.x = Math.sin(ph * Math.PI + (j % 2 ? Math.PI : 0) + (j > 1 ? 0.7 : 0)) * 0.75;
+      });
+      a.position.y = 0.74 + Math.abs(Math.sin(ph * Math.PI)) * 0.05;  // in the saddle
+    } else {
+      a.position.y = Math.abs(Math.sin(lin * total * 5)) * 0.09;
+    }
+  }, sig, k => k).finally(() => {
+    if (horse) releaseHorse(horse);
+    if (riding) SFX.gallop(false);
+  });
+  a.position.y = 0;
+}
+function flashRed(){
+  const f = document.getElementById('flash');
+  f.classList.add('on');
+  setTimeout(() => f.classList.remove('on'), 240);
+}
+async function killActor(a, sig){
+  SFX.thud();
+  a.userData.dead = true;
+  a.userData.label.classList.add('dim');
+  bloodAt(a.position.x + 0.3, a.position.z + 0.2);
+  flashRed();
+  slowmoN++;
+  try { await tween(480, k => { a.rotation.z = k * Math.PI/2; a.position.y = k * 0.12; }, sig); }
+  finally { slowmoN--; }
+}
+function reviveActor(a){
+  a.userData.dead = false; a.rotation.z = 0; a.position.y = 0;
+  a.userData.label.classList.remove('dim');
+}
+function say(a, text, ms, sig){
+  const div = document.createElement('div');
+  div.className = 'bubble'; div.innerHTML = text;
+  const o = new CSS2DObject(div); o.position.set(0, 2.45, 0);
+  a.add(o);
+  // action-cam: zip onto the speaker (keeps the scene's angle; skipped if a shot is in flight)
+  if (camBusy === 0 && trackN === 0){
+    camShot(a.position.x, a.position.z, { zoom: Math.max(camera.zoom, 4.4), dur: 380 }, sig).catch(() => {});
+  }
+  const vsec = SFX.say(text);
+  const hold = Math.max(ms, vsec ? vsec * 1000 + 400 : 0);
+  return wait(hold, sig).finally(() => a.remove(o));
+}
+async function melee(actors, ms, sig){
+  const base = actors.map(a => [a.position.x, a.position.z]);
+  const cx = base.reduce((s,b)=>s+b[0],0)/base.length;
+  const cz = base.reduce((s,b)=>s+b[1],0)/base.length;
+  let sparkT = 0;
+  await tween(ms, (k, lin) => {
+    actors.forEach((a, i) => {
+      if (a.userData.dead) return;
+      // lunge in and out of the fray
+      const lunge = Math.max(0, Math.sin(lin*ms/430*Math.PI*2 + i*1.9)) * 0.22;
+      const dx = cx - base[i][0], dz = cz - base[i][1], dd = Math.hypot(dx, dz) || 1;
+      a.position.x = base[i][0] + Math.sin(lin*43 + i*7)*0.12 + dx/dd*lunge;
+      a.position.z = base[i][1] + Math.cos(lin*37 + i*5)*0.12 + dz/dd*lunge;
+      faceToward(a, cx, cz);
+      // sword swings / defensive flailing
+      const ph = lin*ms/520*Math.PI*2 + i*1.3;
+      if (a.userData.sword.visible){
+        a.userData.armR.rotation.x = -1.05 + Math.sin(ph)*1.3;
+        a.userData.armL.rotation.x = -0.45 + Math.cos(ph*0.7)*0.3;
+      } else {
+        a.userData.armR.rotation.x = -0.35 + Math.sin(ph*1.4)*0.55;
+        a.userData.armL.rotation.x = -0.35 + Math.cos(ph*1.2)*0.55;
+      }
+    });
+    if (lin > sparkT){ sparkT += 0.12; spark(cx + (rnd()-0.5)*1.4, 0.9 + rnd()*0.5, cz + (rnd()-0.5)*1.4); }
+  }, sig, k=>k);
+  actors.forEach((a,i)=>{
+    if (a.userData.dead) return;
+    a.position.x = base[i][0]; a.position.z = base[i][1];
+    a.userData.armR.rotation.x = a.userData.sword.visible ? -0.45 : 0;
+    a.userData.armL.rotation.x = a.userData.shield.visible ? -0.35 : 0;
+  });
+}
+/* a single dramatic blow: windup, slow-motion chop, kill */
+async function strike(att, vic, sig){
+  faceToward(att, vic.position.x, vic.position.z);
+  faceToward(vic, att.position.x, att.position.z);
+  att.userData.sword.visible = true;
+  const arm = att.userData.armR;
+  await tween(450, k => { arm.rotation.x = -0.45 - k*1.95; }, sig);      // raise overhead
+  slowmoN++;
+  try {
+    await tween(300, k => { arm.rotation.x = -2.4 + k*2.85; }, sig);     // the blow falls
+    spark(vic.position.x, 1.05, vic.position.z);
+    await killActor(vic, sig);
+  } finally { slowmoN--; }
+  await tween(350, k => { arm.rotation.x = 0.45 - k*0.9; }, sig);
+}
+/* ---- cinematic camera: azimuth/polar shots, hard cuts, tracking, shake ---- */
+let camAz = Math.PI/4, camPol = 0.89, camBusy = 0, trackN = 0;
+const clampPol = p => THREE.MathUtils.clamp(p, 0.47, 1.24);
+function camVec(az, pol){
+  const R = 48;
+  return new THREE.Vector3(Math.sin(pol)*Math.sin(az)*R, Math.cos(pol)*R, Math.sin(pol)*Math.cos(az)*R);
+}
+function syncCam(){ // pick up any user orbiting before our next move
+  const off = camera.position.clone().sub(controls.target);
+  const len = off.length() || 1;
+  camAz = Math.atan2(off.x, off.z);
+  camPol = clampPol(Math.acos(THREE.MathUtils.clamp(off.y/len, -1, 1)));
+}
+function camShot(x, z, o={}, sig){
+  syncCam();
+  const az1 = o.az !== undefined ? THREE.MathUtils.degToRad(o.az) : camAz;
+  const pol1 = o.pol !== undefined ? clampPol(THREE.MathUtils.degToRad(o.pol)) : camPol;
+  const zm1 = o.zoom !== undefined ? o.zoom : camera.zoom;
+  const t1 = new THREE.Vector3(x, o.y || 0, z);
+  if (o.cut){
+    camAz = az1; camPol = pol1;
+    controls.target.copy(t1);
+    camera.position.copy(t1).add(camVec(az1, pol1));
+    camera.zoom = zm1; camera.updateProjectionMatrix();
+    return Promise.resolve();
+  }
+  const t0 = controls.target.clone(), az0 = camAz, pol0 = camPol, zm0 = camera.zoom;
+  camBusy++;
+  return tween(o.dur || 1500, k => {
+    camAz = az0 + (az1 - az0)*k;
+    camPol = pol0 + (pol1 - pol0)*k;
+    controls.target.lerpVectors(t0, t1, k);
+    camera.position.copy(controls.target).add(camVec(camAz, camPol));
+    camera.zoom = zm0 + (zm1 - zm0)*k;
+    camera.updateProjectionMatrix();
+  }, sig).finally(() => camBusy--);
+}
+/* drone shot: hard cut to high above the clouds, then dive down onto the subject */
+function droneShot(x, z, o={}, sig){
+  const cf = document.getElementById('cloudfade');
+  cf.classList.add('on');
+  camShot(x, z, { zoom: o.fromZoom || 0.85, pol: 30, az: (o.az !== undefined ? o.az : 45) - 50, cut: true }, sig);
+  setTimeout(() => cf.classList.remove('on'), 450);
+  return camShot(x, z, { zoom: o.zoom || 3.6, pol: o.pol || 64, az: o.az !== undefined ? o.az : 45, dur: o.dur || 2300 }, sig);
+}
+function camFocus(x, z, zoom, dur, sig){ return camShot(x, z, { zoom, dur }, sig); }
+const activeTracks = new Set();
+function trackActor(a, o={}){
+  syncCam();
+  if (o.az !== undefined) camAz = THREE.MathUtils.degToRad(o.az);
+  if (o.pol !== undefined) camPol = clampPol(THREE.MathUtils.degToRad(o.pol));
+  if (o.zoom !== undefined){ camera.zoom = o.zoom; camera.updateProjectionMatrix(); }
+  const u = { update(){
+    controls.target.set(a.position.x, 0.4, a.position.z);
+    camera.position.copy(controls.target).add(camVec(camAz, camPol));
+  }};
+  updatables.add(u);
+  activeTracks.add(u);
+  trackN++;
+  let stopped = false;
+  return () => { if (!stopped){ stopped = true; trackN--; updatables.delete(u); activeTracks.delete(u); } };
+}
+function clearTracks(){ // scene jumps can abort a script before its stop() runs
+  for (const u of activeTracks) updatables.delete(u);
+  activeTracks.clear();
+  trackN = 0;
+}
+function shake(amp, ms, sig){
+  return tween(ms, (k, lin) => {
+    const d = amp * (1 - lin);
+    camera.position.x += (rnd() - 0.5) * d;
+    camera.position.y += (rnd() - 0.5) * d * 0.5;
+    camera.position.z += (rnd() - 0.5) * d;
+  }, sig, k => k);
+}
+
+/* ============================ UI helpers ============================ */
+const $ = id => document.getElementById(id);
+const feudFill = $('feudfill');
+function setFeud(v){
+  feudFill.style.width = v + '%';
+  feudFill.style.background = v < 34 ? 'var(--feud0)' : v < 67 ? 'var(--feud1)' : 'var(--feud2)';
+}
+let treasuryVal = 1200;
+function setTreasury(v){ if (v < treasuryVal) SFX.coin(); treasuryVal = v; $('treasury').textContent = v; }
+function headline(title, sub, sig){
+  SFX.whoosh();
+  const h = $('headline');
+  h.querySelector('h1').textContent = title;
+  h.querySelector('p').textContent = sub;
+  h.classList.add('show');
+  return wait(2800, sig).finally(() => h.classList.remove('show'));
+}
+
+/* ============================ scenes ============================ */
+// position book-keeping: every scene declares full initial state => any scene is jumpable
+const FARAWAY = [0, -60];
+function S(defs){ return defs; }
+const CAST = Object.keys(A);
+
+const scenes = [
+/* 0 — overview */ {
+  title: 'TOURAINE, KINGDOM OF THE FRANKS',
+  date: 'ANNO DOMINI 585',
+  feud: 0, treasury: 1200, hour: 13, weather: 'clear', burned: false, gibbet: false,
+  pos: { priest: [2.2, 12.5], servant: [2.8, 12.9], sichar: [VILLA.x, VILLA.z+1.6], austre: [-1, 13.2],
+         chram: [FARM.x+3, FARM.z+2.8], auno: [FARM.x, FARM.z+0.6], aunoSon: [FARM.x-1, FARM.z+1.4], eberulf: [FARM.x-2.6, FARM.z+2.6],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4], tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         aMan1: [-0.5, 14.6], aMan2: [0.8, 13.8], sMan1: [VILLA.x-1.6, VILLA.z+1.8], sMan2: [VILLA.x+2.9, VILLA.z+2.4],
+         cKin1: [FARM.x-2.8, FARM.z+0.2], cKin2: [FARM.x+1.6, FARM.z+3.2],
+         puer1: [3.4, 12.0], puer2: [2.2, 12.6], puer3: [VILLA.x+2.5, VILLA.z+2.9], puer4: [VILLA.x+3.3, VILLA.z+1.9],
+         audinus: FARAWAY, king: FARAWAY },
+  dead: [], gone: ['audinus','king'],
+  cam: [0, -2, 0.95],
+  narr: 'The year is 585. Bishop Gregory keeps his see at Tours. South lies the village of Manthelan; to the west, the villa of Sichar, a rich young landowner; to the east, the farmstead of Auno and his sons — among them Chramnesind. All is, for now, at peace.',
+  latin: 'Gravia tunc inter Toronicos cives bella civilia surrexerunt. — Hist. VII.47',
+  async run(c){
+    await c.wait(600);
+    await droneShot(TOURS.x, TOURS.z+1, { zoom: 1.9, pol: 60, az: 25, dur: 2600 }, c.sig); await c.wait(700);
+    await camShot(VILLA.x, VILLA.z, { zoom: 2.2, pol: 64, az: 70, dur: 2200 }, c.sig);   await c.wait(700);
+    await camShot(FARM.x, FARM.z, { zoom: 2.2, pol: 64, az: 15, dur: 2400 }, c.sig);     await c.wait(700);
+    await camShot(0, 11.5, { zoom: 2.1, pol: 52, az: 45, dur: 2200 }, c.sig);            await c.wait(900);
+  }
+},
+/* 1 — christmas */ {
+  title: 'CHRISTMAS AT MANTHELAN',
+  date: '25 DEC 585 · NIGHTFALL',
+  feud: 0, treasury: 1200, hour: 20.5, weather: 'snow', burned: false, gibbet: false,
+  pos: { priest: [2.4, 12.5], servant: [2.9, 11.9], sichar: [-0.6, 12.4], austre: [-1.6, 14.0],
+         aMan1: [-0.7, 14.8], aMan2: [0.6, 14.2], puer1: [0.4, 12.9], puer2: [-1.4, 12.9],
+         chram: [FARM.x+3, FARM.z+2.8], auno: [FARM.x, FARM.z+0.6], aunoSon: [FARM.x-1, FARM.z+1.4], eberulf: [FARM.x-2.6, FARM.z+2.6],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4], tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         sMan1: [VILLA.x-1.6, VILLA.z+1.8], sMan2: [VILLA.x+2.9, VILLA.z+2.4],
+         cKin1: [FARM.x-2.8, FARM.z+0.2], cKin2: [FARM.x+1.6, FARM.z+3.2],
+         puer3: [VILLA.x+2.5, VILLA.z+2.9], puer4: [VILLA.x+3.3, VILLA.z+1.9],
+         audinus: FARAWAY, king: FARAWAY },
+  dead: [], gone: ['audinus','king'],
+  cam: [0.5, 12.5, 2.6],
+  narr: 'The feast of the Nativity. Sichar celebrates in Manthelan with Austregisel and the men of the village. The parish priest sends his servant boy to invite some of them to drink at his house.',
+  latin: 'Presbiter loci misit puerum ad aliquorum hominum invitationem, ut ad domum eius bibendi gratia venire deberint.',
+  async run(c){
+    SFX.bell(3);
+    await droneShot(2.7, 11.2, { zoom: 3.9, pol: 64, az: 28, dur: 2200 }, c.sig);
+    await say(A.priest, 'Boy — go bid the men come drink at my house, for the feast!', 2600, c.sig);
+    const stop = trackActor(A.servant, { zoom: 3.4, pol: 60 });
+    await walk(A.servant, 0.2, 13.6, c.sig, 2.2);
+    stop();
+    await camShot(-0.5, 13.9, { zoom: 3.3, pol: 58, az: 42, dur: 1100 }, c.sig);
+    await say(A.servant, 'The priest invites you to drink, good sirs!', 2400, c.sig);
+    await c.wait(500);
+  }
+},
+/* 2 — first blood */ {
+  title: 'FIRST BLOOD',
+  date: '25 DEC 585 · NIGHT',
+  feud: 20, treasury: 1200, hour: 22, weather: 'snow', burned: false, gibbet: false, armed: ['aMan1'],
+  pos: { priest: [2.4, 12.5], servant: [0.2, 13.6], sichar: [-0.6, 12.4], austre: [-1.6, 14.0],
+         aMan1: [-0.6, 14.2], aMan2: [0.6, 14.2], puer1: [0.4, 12.9], puer2: [-1.4, 12.9],
+         chram: [FARM.x+3, FARM.z+2.8], auno: [FARM.x, FARM.z+0.6], aunoSon: [FARM.x-1, FARM.z+1.4], eberulf: [FARM.x-2.6, FARM.z+2.6],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4], tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         sMan1: [VILLA.x-1.6, VILLA.z+1.8], sMan2: [VILLA.x+2.9, VILLA.z+2.4],
+         cKin1: [FARM.x-2.8, FARM.z+0.2], cKin2: [FARM.x+1.6, FARM.z+3.2],
+         puer3: [VILLA.x+2.5, VILLA.z+2.9], puer4: [VILLA.x+3.3, VILLA.z+1.9],
+         audinus: FARAWAY, king: FARAWAY },
+  dead: [], gone: ['audinus','king'],
+  cam: [-0.2, 13.8, 3.0],
+  narr: 'One of the invited men — no reason is ever given — draws his sword and strikes the boy down. The servant falls dead on the spot. The holiday is over.',
+  latin: 'Unus ex his qui invitabantur, extracto gladio, eum ferire non metuit. Qui statim cecidit et mortuus est.',
+  async run(c){
+    await c.wait(500);
+    await camShot(0.2, 13.6, { zoom: 3.5, pol: 62, az: 26, dur: 900 }, c.sig);
+    await walk(A.aMan1, A.servant.position.x + 0.8, A.servant.position.z, c.sig, 3.5);
+    await camShot(0.6, 13.6, { zoom: 5.4, pol: 69, az: 12, cut: true }, c.sig);
+    await c.wait(350);
+    await strike(A.aMan1, A.servant, c.sig);
+    await camShot(-0.2, 13.8, { zoom: 2.9, pol: 50, az: 45, dur: 1700 }, c.sig);
+    await headline('MURDER AT THE FEAST!', 'Priest\'s boy slain at Manthelan — drawn steel on Christmas night', c.sig);
+    await c.wait(300);
+  }
+},
+/* 3 — brawl at the church */ {
+  title: 'BRAWL AT THE CHURCH',
+  date: '26 DEC 585',
+  feud: 35, treasury: 1200, hour: 10, weather: 'snow', burned: false, gibbet: false, armed: ['sichar','austre','aMan1','aMan2'],
+  pos: { priest: [-0.4, 11.9], sichar: [-1.6, 11.4], austre: [-0.2, 14.6],
+         aMan1: [-1.2, 15.0], aMan2: [0.8, 15.0], servant: [0.2, 13.6],
+         puer1: [2.6, 12.5], puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3],
+         chram: [FARM.x+3, FARM.z+2.8], auno: [FARM.x, FARM.z+0.6], aunoSon: [FARM.x-1, FARM.z+1.4], eberulf: [FARM.x-2.6, FARM.z+2.6],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4], tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         sMan1: [VILLA.x-1.6, VILLA.z+1.8], sMan2: [VILLA.x+2.9, VILLA.z+2.4],
+         cKin1: [FARM.x-2.8, FARM.z+0.2], cKin2: [FARM.x+1.6, FARM.z+3.2],
+         audinus: FARAWAY, king: FARAWAY },
+  dead: ['servant'], gone: ['audinus','king'],
+  cam: [-0.8, 12.6, 2.5],
+  narr: 'Sichar, the priest\'s friend, takes up arms and waits at the church for Austregisel. Austregisel arms his own men and comes for him. The two sides collide. Beaten, Sichar slips away among the clergy and flees to his villa — abandoning his silver, his garments, and four wounded servants in the priest\'s house.',
+  latin: 'Mixtisque omnibus, cum se pars utraque conlideret, Sicharius inter clericos ereptus, ad villam suam effugit.',
+  async run(c){
+    await camShot(-1.6, 11.6, { zoom: 4.1, pol: 67, az: 58, dur: 1200 }, c.sig);
+    await say(A.sichar, 'Austregisel! Answer for the boy\'s blood!', 2200, c.sig);
+    await Promise.all([
+      walk(A.austre, -1.0, 12.6, c.sig, 3.4),
+      walk(A.aMan1, -2.0, 12.2, c.sig, 3.4),
+      walk(A.aMan2, -0.2, 12.0, c.sig, 3.4),
+      camShot(-1.2, 12.2, { zoom: 4.3, pol: 68, az: 30, dur: 1500 }, c.sig),
+    ]);
+    await Promise.all([
+      melee([A.sichar, A.austre, A.aMan1, A.aMan2], 3200, c.sig),
+      camShot(-1.2, 12.2, { zoom: 4.1, pol: 64, az: 100, dur: 3200 }, c.sig), // slow orbit around the brawl
+      shake(0.25, 3200, c.sig),
+    ]);
+    const stop = trackActor(A.sichar, { zoom: 3.0, pol: 58 });
+    await walk(A.sichar, -4.5, 9.0, c.sig, 5);
+    await walk(A.sichar, VILLA.x+1.5, VILLA.z+1.5, c.sig, 6);
+    stop();
+    await camShot(VILLA.x+1, VILLA.z+1, { zoom: 2.4, pol: 52, az: 45, dur: 900 }, c.sig);
+    await c.wait(400);
+  }
+},
+/* 4 — austregisel strikes */ {
+  title: 'AUSTREGISEL TAKES THE SPOILS',
+  date: '26 DEC 585 · NIGHT',
+  feud: 50, treasury: 1200, hour: 21, weather: 'clear', burned: false, gibbet: false, armed: ['austre','aMan1','aMan2'],
+  pos: { priest: [-0.4, 11.9], austre: [-0.4, 13.8], aMan1: [-1.4, 14.4], aMan2: [0.6, 14.4],
+         puer1: [2.6, 12.5], puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3],
+         sichar: [VILLA.x+1.5, VILLA.z+1.5], servant: [0.2, 13.6],
+         chram: [FARM.x+3, FARM.z+2.8], auno: [FARM.x, FARM.z+0.6], aunoSon: [FARM.x-1, FARM.z+1.4], eberulf: [FARM.x-2.6, FARM.z+2.6],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4], tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         sMan1: [VILLA.x-1.6, VILLA.z+1.8], sMan2: [VILLA.x+2.9, VILLA.z+2.4],
+         cKin1: [FARM.x-2.8, FARM.z+0.2], cKin2: [FARM.x+1.6, FARM.z+3.2],
+         audinus: FARAWAY, king: FARAWAY },
+  dead: ['servant'], gone: ['audinus','king'],
+  cam: [2.6, 11.8, 2.9],
+  narr: 'With Sichar gone, Austregisel storms the priest\'s house a second time. He cuts down the four wounded servants and carries off the gold, the silver, and everything else of Sichar\'s.',
+  latin: 'Austrighyselus iterum inruens, interfectis pueris, aurum argentumque cum reliquis rebus abstulit.',
+  async run(c){
+    await Promise.all([
+      walk(A.austre, 2.2, 11.6, c.sig, 3.6),
+      walk(A.aMan1, 3.0, 12.5, c.sig, 3.6),
+      walk(A.aMan2, 3.6, 11.6, c.sig, 3.6),
+      camShot(2.9, 11.9, { zoom: 3.7, pol: 66, az: 20, dur: 1500 }, c.sig),
+    ]);
+    await camShot(2.9, 11.9, { zoom: 4.8, pol: 69, az: 0, cut: true }, c.sig);
+    await Promise.all([
+      melee([A.austre, A.aMan1, A.aMan2, A.puer1, A.puer2, A.puer3, A.puer4], 2300, c.sig),
+      camShot(2.9, 11.9, { zoom: 4.6, pol: 66, az: -45, dur: 2300 }, c.sig),
+    ]);
+    await Promise.all([
+      killActor(A.puer1, c.sig), killActor(A.puer2, c.sig), killActor(A.puer3, c.sig), killActor(A.puer4, c.sig),
+      shake(0.5, 1100, c.sig),
+    ]);
+    for (let i=0;i<5;i++){ spark(2.6 + rnd()*1.2, 0.6, 11.4 + rnd()*1.2); await c.wait(180); }
+    await say(A.austre, 'The silver is mine now.', 1800, c.sig);
+    await camShot(2.2, 12.4, { zoom: 3.0, pol: 52, az: 45, dur: 1500 }, c.sig);
+    await c.wait(300);
+  }
+},
+/* 5 — tribunal */ {
+  title: 'JUDGMENT AT TOURS',
+  date: 'JANUARY 586',
+  feud: 45, treasury: 1200, hour: 11, weather: 'overcast', burned: false, gibbet: false,
+  pos: { judge: [TOURS.x+3.1, TOURS.z+0.6], austre: [TOURS.x+2.0, TOURS.z+1.8], sichar: [TOURS.x+4.4, TOURS.z+1.8],
+         gregory: [TOURS.x-1.2, TOURS.z+1.4], aMan1: [TOURS.x+1.2, TOURS.z+2.6], aMan2: [TOURS.x+2.6, TOURS.z+2.8],
+         sMan1: [TOURS.x+5.2, TOURS.z+2.6], sMan2: [TOURS.x+4.0, TOURS.z+2.9],
+         priest: [-0.4, 11.9], servant: [0.2, 13.6],
+         puer1: [2.6, 12.5], puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3],
+         chram: [FARM.x+3, FARM.z+2.8], auno: [FARM.x, FARM.z+0.6], aunoSon: [FARM.x-1, FARM.z+1.4], eberulf: [FARM.x-2.6, FARM.z+2.6],
+         tranq: [VILLA.x+1.4, VILLA.z+0.6], cKin1: [FARM.x-2.8, FARM.z+0.2], cKin2: [FARM.x+1.6, FARM.z+3.2],
+         audinus: FARAWAY, king: FARAWAY },
+  dead: ['servant','puer1','puer2','puer3','puer4'], gone: ['audinus','king'],
+  cam: [TOURS.x+3, TOURS.z+1.6, 2.6],
+  narr: 'The citizens convene a tribunal at Tours. The verdict: Austregisel is the homicide — he killed the servants and seized goods without a hearing — and must suffer the censure of the law. A settlement is agreed.',
+  latin: 'Praeceptum est ut Austrighyselus, qui homicida erat… censura legali condempnaretur. Inito placito…',
+  async run(c){
+    const push = camShot(TOURS.x+3.1, TOURS.z+1.2, { zoom: 3.5, pol: 62, az: 28, dur: 2800 }, c.sig);
+    await say(A.judge, 'Austregisel: homicide. Let him bear the censure of the law!', 2800, c.sig);
+    await push;
+    await camShot(A.austre.position.x, A.austre.position.z, { zoom: 5.2, pol: 68, az: 8, cut: true }, c.sig);
+    spark(A.austre.position.x, 1.4, A.austre.position.z);
+    await say(A.austre, '…', 1100, c.sig);
+    await headline('AUSTREGISEL CONDEMNED', 'Tribunal of citizens finds for Sichar — composition to be paid', c.sig);
+  }
+},
+/* 6 — night raid */ {
+  title: 'THE NIGHT RAID ON AUNO\'S FARM',
+  date: 'FEBRUARY 586 · DEAD OF NIGHT',
+  feud: 75, treasury: 1200, hour: 2, weather: 'clear', burned: false, gibbet: false, armed: ['sichar','audinus','sMan1','sMan2'],
+  pos: { sichar: [VILLA.x+1.5, VILLA.z+1.5], audinus: [VILLA.x+0.4, VILLA.z+2.2],
+         sMan1: [VILLA.x-0.6, VILLA.z+2.4], sMan2: [VILLA.x+2.6, VILLA.z+2.3],
+         auno: [FARM.x-0.3, FARM.z+0.4], aunoSon: [FARM.x-1.2, FARM.z+1.2], eberulf: [FARM.x+1.0, FARM.z+0.9],
+         chram: [FARM.x+3.2, FARM.z+3.05],
+         priest: [-0.4, 11.9], servant: [0.2, 13.6], austre: [-0.4, 13.8], aMan1: [-1.4, 14.4], aMan2: [0.6, 14.4],
+         puer1: [2.6, 12.5], puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4], tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         cKin1: [FARM.x-2.8, FARM.z+0.2], cKin2: [FARM.x+1.6, FARM.z+3.2],
+         king: FARAWAY },
+  dead: ['servant','puer1','puer2','puer3','puer4'], gone: ['king'],
+  cam: [VILLA.x+2, VILLA.z+1, 2.2],
+  narr: 'Word reaches Sichar that his stolen goods sit in Auno\'s house — Auno, whose family held them with Austregisel\'s kin. Abandoning the settlement, he joins Audinus and falls on the farmstead by night. He kills Auno, Auno\'s brother Eberulf, and Auno\'s son with his own hand, slays the slaves, and drives off the herds. Chramnesind is left alive — and orphaned.',
+  latin: 'Postposito placito… inruit super eos nocte, elisumque hospicium, in quo dormiebant, patrem cum fratre et filio interemit.',
+  async run(c){
+    await droneShot(VILLA.x+1.5, VILLA.z+1.5, { zoom: 4.6, pol: 68, az: 60, dur: 2000 }, c.sig);
+    await say(A.sichar, 'My silver sits in Auno\'s hall. We ride tonight.', 2400, c.sig);
+    const stop = trackActor(A.sichar, { zoom: 2.9, pol: 62, az: 70 });
+    await Promise.all([
+      walk(A.sichar, -8, 5.6, c.sig, 7), walk(A.audinus, -8.8, 6.2, c.sig, 7),
+      walk(A.sMan1, -9.4, 5.2, c.sig, 7), walk(A.sMan2, -7.6, 6.4, c.sig, 7),
+    ]);
+    await Promise.all([
+      walk(A.sichar, FARM.x-1.4, FARM.z+0.6, c.sig, 7), walk(A.audinus, FARM.x-2.2, FARM.z+1.4, c.sig, 7),
+      walk(A.sMan1, FARM.x-2.6, FARM.z, c.sig, 7), walk(A.sMan2, FARM.x-0.6, FARM.z+1.8, c.sig, 7),
+    ]);
+    stop();
+    await camShot(FARM.x-0.5, FARM.z+0.8, { zoom: 4.4, pol: 69, az: -35, cut: true }, c.sig);
+    await Promise.all([
+      melee([A.sichar, A.audinus, A.sMan1, A.sMan2, A.auno, A.aunoSon, A.eberulf], 2800, c.sig),
+      camShot(FARM.x-0.5, FARM.z+0.8, { zoom: 4.2, pol: 65, az: 35, dur: 2800 }, c.sig),
+      shake(0.35, 2800, c.sig),
+    ]);
+    await killActor(A.auno, c.sig);
+    await killActor(A.eberulf, c.sig);
+    await killActor(A.aunoSon, c.sig);
+    // cut to the orphan watching
+    await camShot(A.chram.position.x, A.chram.position.z, { zoom: 5.4, pol: 68, az: 130, cut: true }, c.sig);
+    const drift = farmSheep.map((s,i)=> tween(2600, k => { s.position.x = FARM.x - 1.2 + i*0.8 - k*7; s.position.z = FARM.z + 3.8 - k*1.4; }, c.sig));
+    await say(A.chram, 'Father…!', 2200, c.sig);
+    await camShot(FARM.x, FARM.z+1.5, { zoom: 2.4, pol: 52, az: 45, dur: 1800 }, c.sig);
+    await Promise.all(drift);
+    await headline('MASSACRE BY NIGHT', 'Sichar slays Auno, Eberulf and Auno\'s son — herds driven west', c.sig);
+  }
+},
+/* 7 — gregory pleads */ {
+  title: 'THE BISHOP PLEADS FOR PEACE',
+  date: 'MARCH 586',
+  feud: 70, treasury: 1200, hour: 10, weather: 'rain', burned: false, gibbet: false,
+  pos: { gregory: [TOURS.x-2.6, TOURS.z+1.2], judge: [TOURS.x-1.2, TOURS.z+0.6],
+         chram: [TOURS.x-3.6, TOURS.z+2.6], cKin1: [TOURS.x-4.5, TOURS.z+3.2], cKin2: [TOURS.x-2.7, TOURS.z+3.4],
+         sichar: [VILLA.x+1.5, VILLA.z+1.5], audinus: [VILLA.x+0.4, VILLA.z+2.2],
+         sMan1: [VILLA.x-0.6, VILLA.z+2.4], sMan2: [VILLA.x+2.6, VILLA.z+2.3],
+         priest: [-0.4, 11.9], servant: [0.2, 13.6], austre: [-0.4, 13.8], aMan1: [-1.4, 14.4], aMan2: [0.6, 14.4],
+         puer1: [2.6, 12.5], puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3],
+         auno: [FARM.x-0.3, FARM.z+0.4], aunoSon: [FARM.x-1.2, FARM.z+1.2], eberulf: [FARM.x+1.0, FARM.z+0.9],
+         tranq: [VILLA.x+1.4, VILLA.z+0.6], king: FARAWAY },
+  dead: ['servant','puer1','puer2','puer3','puer4','auno','aunoSon','eberulf'], gone: ['king'],
+  cam: [TOURS.x-3, TOURS.z+2, 2.7],
+  narr: 'Gregory himself summons the parties. "Do not go further in crime, lest the evil spread wider!" He offers the Church\'s own silver to pay the killer\'s composition and save Chramnesind\'s honor. But Chramnesind\'s party, demanding vengeance for father, brother and uncle, refuses.',
+  latin: '"Estote, quaeso, pacifici… Beati pacifici, quoniam filii Dei vocabuntur." Sed pars Chramnesindi accepere noluit.',
+  async run(c){
+    const push = camShot(TOURS.x-2.6, TOURS.z+1.4, { zoom: 4.4, pol: 64, az: 20, dur: 3200 }, c.sig);
+    await say(A.gregory, 'Cease, O men! Blessed are the peacemakers — let the Church\'s silver pay, that no soul be lost!', 3400, c.sig);
+    await push;
+    await camShot(A.chram.position.x, A.chram.position.z, { zoom: 5.4, pol: 69, az: 165, cut: true }, c.sig);
+    await c.wait(300);
+    await say(A.chram, 'No silver weighs against my father\'s blood. I refuse.', 2800, c.sig);
+    await Promise.all([
+      walk(A.chram, TOURS.x-3.6, TOURS.z+4.4, c.sig, 2.6), walk(A.cKin1, TOURS.x-4.5, TOURS.z+4.8, c.sig, 2.6), walk(A.cKin2, TOURS.x-2.7, TOURS.z+5.0, c.sig, 2.6),
+      camShot(TOURS.x-3.2, TOURS.z+3.4, { zoom: 3.0, pol: 56, az: 45, dur: 2000 }, c.sig),
+    ]);
+    await headline('PEACE TALKS COLLAPSE', 'Bishop\'s offer of church silver spurned by the house of Auno', c.sig);
+  }
+},
+/* 8 — false rumor */ {
+  title: 'A SERVANT\'S BLADE, A FALSE RUMOR',
+  date: 'SPRING 586 · THE ROAD TO POITIERS',
+  feud: 70, treasury: 1200, hour: 14, weather: 'clear', burned: false, gibbet: false,
+  pos: { sichar: [VILLA.x+1.5, VILLA.z+1.5], sMan1: [VILLA.x+0.4, VILLA.z+2.2], sMan2: [VILLA.x+2.6, VILLA.z+2.3],
+         puer1: [VILLA.x+3.2, VILLA.z+2.8],
+         chram: [FARM.x+3.2, FARM.z+3.05], cKin1: [FARM.x+2.2, FARM.z+3.0], cKin2: [FARM.x+4.2, FARM.z+3.0],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4],
+         priest: [-0.4, 11.9], servant: [0.2, 13.6], austre: [-0.4, 13.8], aMan1: [-1.4, 14.4], aMan2: [0.6, 14.4],
+         puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3],
+         auno: [FARM.x-0.3, FARM.z+0.4], aunoSon: [FARM.x-1.2, FARM.z+1.2], eberulf: [FARM.x+1.0, FARM.z+0.9],
+         tranq: [VILLA.x+1.4, VILLA.z+0.6], audinus: FARAWAY, king: FARAWAY },
+  dead: ['servant','puer2','puer3','puer4','auno','aunoSon','eberulf'], gone: ['audinus','king'],
+  cam: [VILLA.x+1, VILLA.z+2, 2.3],
+  narr: 'Sichar sets out for Poitiers to visit his wife Tranquilla\'s estates. On the road he raises his rod against a slave — who draws his master\'s own sword and cuts him down. Sichar is only wounded; the slave is mutilated and hanged. But the rumor that flies back to Tours says: SICHAR IS DEAD.',
+  latin: 'Ille, extracto baltei gladio, dominum sauciare non metuit… Interim sonus in Toronicum exiit, Sicharium fuisse defunctum.',
+  async run(c){
+    const stop = trackActor(A.sichar, { zoom: 2.9, pol: 60, az: 30 });
+    await Promise.all([ walk(A.sichar, -2, 5.6, c.sig, 5), walk(A.puer1, -3, 5.9, c.sig, 5) ]);
+    await Promise.all([ walk(A.sichar, 0.4, 14, c.sig, 5), walk(A.puer1, -0.4, 14.5, c.sig, 5) ]);
+    await Promise.all([ walk(A.sichar, 0.4, 19.5, c.sig, 5), walk(A.puer1, -0.4, 20, c.sig, 5) ]);
+    stop();
+    await camShot(0, 19.8, { zoom: 5.0, pol: 69, az: 25, cut: true }, c.sig);
+    await say(A.sichar, 'Work, dog! (strikes him with his rod)', 2000, c.sig);
+    spark(A.sichar.position.x, 1.0, A.sichar.position.z);
+    flashRed();
+    await withSlowmo(tween(700, k => { A.sichar.rotation.z = k*1.1; A.sichar.position.y = 0; }, c.sig));
+    bloodAt(A.sichar.position.x+0.3, A.sichar.position.z);
+    await say(A.puer1, 'No more blows, master!', 1800, c.sig);
+    await killActor(A.puer1, c.sig); // the slave is seized and executed
+    await camShot(0.2, 18.5, { zoom: 3.2, pol: 54, az: 50, dur: 1400 }, c.sig);
+    await headline('SICHAR DEAD?!', 'Rumor races up the Poitiers road — Tours believes its feuding lord slain', c.sig);
+    await tween(600, k => { A.sichar.rotation.z = 1.1 - k*1.1; }, c.sig); // he gets back up — wounded, alive
+    A.sichar.userData.label.classList.add('dim');
+  }
+},
+/* 9 — revenge: arson */ {
+  title: 'CHRAMNESIND\'S REVENGE',
+  date: 'SPRING 586',
+  feud: 90, treasury: 1200, hour: 19, weather: 'clear', burned: false, gibbet: false, armed: ['chram','cKin1','cKin2'],
+  pos: { chram: [FARM.x+3.2, FARM.z+3.05], cKin1: [FARM.x+2.2, FARM.z+3.0], cKin2: [FARM.x+4.2, FARM.z+3.0],
+         sMan1: [VILLA.x-0.8, VILLA.z+1.9], sMan2: [VILLA.x+2.4, VILLA.z+2.1],
+         tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4],
+         priest: [-0.4, 11.9], servant: [0.2, 13.6], austre: [-0.4, 13.8], aMan1: [-1.4, 14.4], aMan2: [0.6, 14.4],
+         puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3], puer1: [0, 20],
+         auno: [FARM.x-0.3, FARM.z+0.4], aunoSon: [FARM.x-1.2, FARM.z+1.2], eberulf: [FARM.x+1.0, FARM.z+0.9],
+         sichar: FARAWAY, audinus: FARAWAY, king: FARAWAY },
+  dead: ['servant','puer1','puer2','puer3','puer4','auno','aunoSon','eberulf'], gone: ['sichar','audinus','king'],
+  cam: [FARM.x, FARM.z+1, 2.2],
+  narr: 'Hearing that his enemy is dead, Chramnesind summons his kin and falls upon Sichar\'s estate. They strip the houses, kill the slaves, burn every building of Sichar\'s and of his neighbors, and drive off the cattle. The feud is now past any judge\'s mending — and Sichar is not even dead.',
+  latin: 'Domus omnes tam Sichari quam reliquorum… incendio concremavit, abducens secum pecora vel quaecumque movere potuit.',
+  async run(c){
+    await droneShot(FARM.x+3, FARM.z+2.4, { zoom: 4.6, pol: 67, az: 25, dur: 2000 }, c.sig);
+    await say(A.chram, 'Sichar dead, and not by my hand? Then his roof will pay. Ride!', 2600, c.sig);
+    const stop = trackActor(A.chram, { zoom: 2.9, pol: 62, az: -60 });
+    await Promise.all([
+      walk(A.chram, 2, 5.6, c.sig, 7), walk(A.cKin1, 2.6, 6.2, c.sig, 7), walk(A.cKin2, 1.4, 5.0, c.sig, 7),
+    ]);
+    await Promise.all([
+      walk(A.chram, VILLA.x+1.4, VILLA.z+0.8, c.sig, 7), walk(A.cKin1, VILLA.x-1.2, VILLA.z+1.6, c.sig, 7), walk(A.cKin2, VILLA.x+2.8, VILLA.z+1.4, c.sig, 7),
+    ]);
+    stop();
+    await camShot(VILLA.x+0.5, VILLA.z+1, { zoom: 4.4, pol: 69, az: -20, cut: true }, c.sig);
+    await Promise.all([
+      melee([A.chram, A.cKin1, A.cKin2, A.sMan1, A.sMan2], 2200, c.sig),
+      camShot(VILLA.x+0.5, VILLA.z+1, { zoom: 4.2, pol: 65, az: 40, dur: 2200 }, c.sig),
+    ]);
+    await Promise.all([killActor(A.sMan1, c.sig), killActor(A.sMan2, c.sig)]);
+    new FireFx(VILLA.x, VILLA.z-1.2, 1.5);
+    await shake(0.45, 800, c.sig);
+    new FireFx(VILLA.x-3.0, VILLA.z+1.4, 1.0);
+    new FireFx(VILLA.x+2.9, VILLA.z+1.2, 1.0);
+    await Promise.all([
+      tweenHour(21.5, 1200, c.sig),
+      camShot(VILLA.x, VILLA.z, { zoom: 3.3, pol: 71, az: -55, dur: 2400 }, c.sig), // low dramatic angle on the blaze
+      shake(0.3, 1600, c.sig),
+    ]);
+    const drift = villaSheep.map((s,i)=> tween(2600, k => { s.position.x = VILLA.x - 0.6 + i*0.9 + k*7; s.position.z = VILLA.z + 3.6 - k*0.8; }, c.sig));
+    await c.wait(1800);
+    villaIntact.visible = false; villaRuins.visible = true;
+    await Promise.all([ ...drift, camShot(VILLA.x+1, VILLA.z+1.5, { zoom: 2.3, pol: 54, az: 45, dur: 2200 }, c.sig) ]);
+    await headline('VILLA IN FLAMES', 'House of Auno burns Sichar\'s estate to the ground — herds taken east', c.sig);
+    clearFires();
+    new FireFx(VILLA.x, VILLA.z-1.2, 0.7);
+  }
+},
+/* 10 — settlement */ {
+  title: 'THE SETTLEMENT',
+  date: 'SUMMER 586',
+  feud: 15, treasury: 1200, hour: 12, weather: 'clear', burned: true, gibbet: false,
+  pos: { judge: [TOURS.x+3.1, TOURS.z+0.6], gregory: [TOURS.x+1.6, TOURS.z+0.8],
+         sichar: [TOURS.x+4.6, TOURS.z+2.0], chram: [TOURS.x+1.6, TOURS.z+2.2],
+         cKin1: [TOURS.x+0.6, TOURS.z+3.0], cKin2: [TOURS.x+2.4, TOURS.z+3.2],
+         sMan1: [VILLA.x-0.8, VILLA.z+1.9], sMan2: [VILLA.x+2.4, VILLA.z+2.1], tranq: [TOURS.x+5.6, TOURS.z+2.8],
+         priest: [-0.4, 11.9], servant: [0.2, 13.6], austre: [-0.4, 13.8], aMan1: [-1.4, 14.4], aMan2: [0.6, 14.4],
+         puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3], puer1: [0, 20],
+         auno: [FARM.x-0.3, FARM.z+0.4], aunoSon: [FARM.x-1.2, FARM.z+1.2], eberulf: [FARM.x+1.0, FARM.z+0.9],
+         audinus: FARAWAY, king: FARAWAY },
+  dead: ['servant','puer1','puer2','puer3','puer4','auno','aunoSon','eberulf','sMan1','sMan2'], gone: ['audinus','king'],
+  cam: [TOURS.x+3, TOURS.z+1.8, 2.5],
+  narr: 'Both parties are haled before the judges. The finding: Chramnesind, who burned houses rather than accept composition, forfeits half the blood-price owed him — against the strict law, Gregory notes, but done to make peace. Sichar pays the other half — with silver the Church provides. Oaths are sworn never to move against each other again. The feud is officially over.',
+  latin: 'Datum ab aeclesia argentum… datis sibi partes invicem sacramentis, ut nullo umquam tempore contra alterum pars alia musitaret. Et sic altercatio terminum fecit.',
+  async run(c){
+    const push = camShot(TOURS.x+3.1, TOURS.z+1.4, { zoom: 3.6, pol: 63, az: 25, dur: 3000 }, c.sig);
+    await say(A.judge, 'He who burned houses forfeits half the price. The Church pays the rest. Swear the oaths!', 3200, c.sig);
+    await push;
+    setTreasury(600);
+    for (let i=0;i<6;i++){ spark(TOURS.x+3.0 + (rnd()-0.5)*1.6, 1.0, TOURS.z+1.8 + (rnd()-0.5)*0.8); await c.wait(160); }
+    await Promise.all([ walk(A.sichar, TOURS.x+3.6, TOURS.z+1.8, c.sig, 2), walk(A.chram, TOURS.x+2.6, TOURS.z+1.8, c.sig, 2) ]);
+    await camShot(TOURS.x+3.1, TOURS.z+1.8, { zoom: 5.2, pol: 68, az: 12, cut: true }, c.sig);
+    await say(A.sichar, 'I swear it.', 1500, c.sig);
+    await say(A.chram, 'And I.', 1500, c.sig);
+    SFX.bell(2);
+    await camShot(TOURS.x+2.5, TOURS.z+1.5, { zoom: 2.8, pol: 54, az: 40, dur: 1600 }, c.sig);
+    await headline('PEACE — AT A PRICE', 'Church silver closes the feud; oaths sworn before the count of Tours', c.sig);
+  }
+},
+/* 11 — unlikely friends */ {
+  title: 'AN UNLIKELY FRIENDSHIP',
+  date: 'A.D. 588 · TWO YEARS LATER',
+  feud: 5, treasury: 600, hour: 17.5, weather: 'clear', burned: true, gibbet: false,
+  pos: { chram: [FARM.x+2.6, FARM.z+3.1], sichar: [FARM.x+3.6, FARM.z+3.1],
+         cKin1: [FARM.x+1.4, FARM.z+3.4], tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4],
+         priest: [-0.4, 11.9], servant: [0.2, 13.6], austre: [-0.4, 13.8], aMan1: [-1.4, 14.4], aMan2: [0.6, 14.4],
+         puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3], puer1: [0, 20],
+         auno: [FARM.x-0.3, FARM.z+0.4], aunoSon: [FARM.x-1.2, FARM.z+1.2], eberulf: [FARM.x+1.0, FARM.z+0.9],
+         sMan1: [VILLA.x-0.8, VILLA.z+1.9], sMan2: [VILLA.x+2.4, VILLA.z+2.1],
+         cKin2: [FARM.x-2.8, FARM.z+0.2], audinus: FARAWAY, king: FARAWAY },
+  dead: [], gone: ['audinus','king','servant','puer1','puer2','puer3','puer4','auno','aunoSon','eberulf','sMan1','sMan2'],
+  cam: [FARM.x+3, FARM.z+3, 2.9],
+  narr: 'Strangest of all: the killer and the orphan become inseparable. Sichar and Chramnesind eat at one table, share one bed, and hold each other — Gregory writes — in mutual love. The man who slaughtered Chramnesind\'s family is now his dearest companion.',
+  latin: 'In tantum se caritate mutua diligerent, ut plerumque simul cibum caperent ac in uno pariter stratu recumberent.',
+  async run(c){
+    await camShot(FARM.x+3.1, FARM.z+3.1, { zoom: 5.0, pol: 67, az: 22, dur: 1600 }, c.sig);
+    await say(A.sichar, 'Brother! Another cup!', 2000, c.sig);
+    const drift = camShot(FARM.x+3.1, FARM.z+3.1, { zoom: 5.0, pol: 64, az: 55, dur: 3600 }, c.sig);
+    await say(A.chram, 'For you, sweet friend — always.', 2000, c.sig);
+    await drift;
+    await c.wait(400);
+  }
+},
+/* 12 — the fatal dinner */ {
+  title: 'THE FATAL DINNER',
+  date: 'A.D. 588 · NIGHT',
+  feud: 100, treasury: 600, hour: 22, weather: 'clear', burned: true, gibbet: false,
+  pos: { chram: [FARM.x+2.6, FARM.z+3.2], sichar: [FARM.x+3.6, FARM.z+3.2],
+         cKin1: [FARM.x+1.2, FARM.z+3.6], tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4],
+         priest: [-0.4, 11.9], servant: [0.2, 13.6], austre: [-0.4, 13.8], aMan1: [-1.4, 14.4], aMan2: [0.6, 14.4],
+         puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3], puer1: [0, 20],
+         auno: [FARM.x-0.3, FARM.z+0.4], aunoSon: [FARM.x-1.2, FARM.z+1.2], eberulf: [FARM.x+1.0, FARM.z+0.9],
+         sMan1: [VILLA.x-0.8, VILLA.z+1.9], sMan2: [VILLA.x+2.4, VILLA.z+2.1],
+         cKin2: [FARM.x-2.8, FARM.z+0.2], audinus: FARAWAY, king: FARAWAY },
+  dead: [], gone: ['audinus','king','servant','puer1','puer2','puer3','puer4','auno','aunoSon','eberulf','sMan1','sMan2'],
+  cam: [FARM.x+3.1, FARM.z+3.2, 3.2],
+  narr: 'Chramnesind prepares a supper. Sichar, heavy with wine, boasts: "You should thank me, sweet brother — I killed your kin, and the compensation made your house rich." Chramnesind hears it in bitterness of heart: "Unless I avenge my kinsmen, I must lose the name of man and be called a weak woman." He snuffs the lights and splits Sichar\'s skull.',
+  latin: '"Nisi ulciscar interitum parentum meorum, amittere nomen viri debeo et mulier infirma vocarer." Et statim, extinctis luminaribus, caput Sichari seca dividit.',
+  async run(c){
+    await camShot(FARM.x+3.1, FARM.z+3.2, { zoom: 4.8, pol: 67, az: 18, dur: 1400 }, c.sig);
+    await say(A.sichar, 'Thank me, sweet brother! I slew your kin — and the gold for it fills this very house!', 3600, c.sig);
+    await camShot(A.chram.position.x, A.chram.position.z, { zoom: 5.8, pol: 70, az: 145, cut: true }, c.sig); // hard cut: the listener's face
+    await c.wait(500);
+    await say(A.chram, '(in his heart) Avenge them — or be called a weak woman.', 3000, c.sig);
+    await tweenHour(1.5, 900, c.sig); // the lights go out
+    await c.wait(600);
+    armActor(A.chram, true, false);
+    await camShot(FARM.x+3.1, FARM.z+3.2, { zoom: 5.4, pol: 69, az: 60, cut: true }, c.sig);
+    spark(A.sichar.position.x, 1.3, A.sichar.position.z);
+    await strike(A.chram, A.sichar, c.sig);
+    await c.wait(600);
+    await Promise.all([
+      tweenHour(23, 1000, c.sig),
+      camShot(A.sichar.position.x, A.sichar.position.z, { zoom: 4.0, pol: 71, az: 100, dur: 2400 }, c.sig), // low angle over the body
+    ]);
+    await headline('SICHAR SLAIN AT TABLE', 'Host splits guest\'s skull as lamps go dark — feud reborn in a single stroke', c.sig);
+  }
+},
+/* 13 — aftermath */ {
+  title: 'AFTERMATH & EPITAPH',
+  date: 'A.D. 588',
+  feud: 100, treasury: 600, hour: 8, weather: 'overcast', burned: true, gibbet: true,
+  pos: { chram: [FARM.x+2.6, FARM.z+2.4],
+         tranq: [VILLA.x+1.4, VILLA.z+0.6],
+         gregory: [TOURS.x-2.6, TOURS.z+1.4], judge: [TOURS.x+3.1, TOURS.z+0.4], king: [TOURS.x-2.6, TOURS.z-0.2],
+         priest: [-0.4, 11.9], servant: [0.2, 13.6], austre: [-0.4, 13.8], aMan1: [-1.4, 14.4], aMan2: [0.6, 14.4],
+         puer2: [3.4, 12.7], puer3: [2.2, 13.0], puer4: [3.7, 12.3], puer1: [0, 20],
+         auno: [FARM.x-0.3, FARM.z+0.4], aunoSon: [FARM.x-1.2, FARM.z+1.2], eberulf: [FARM.x+1.0, FARM.z+0.9],
+         sMan1: [VILLA.x-0.8, VILLA.z+1.9], sMan2: [VILLA.x+2.4, VILLA.z+2.1],
+         cKin1: [FARM.x-2.8, FARM.z+0.2], cKin2: [FARM.x+1.6, FARM.z+3.2],
+         sichar: FARAWAY, audinus: FARAWAY },
+  dead: [], gone: ['sichar','audinus','servant','puer1','puer2','puer3','puer4','auno','aunoSon','eberulf','sMan1','sMan2'],
+  cam: [VILLA.x+3, VILLA.z+3, 2.4],
+  narr: 'Chramnesind strips the corpse and hangs it on his fence-post, then rides to King Childebert to plead for his life. Queen Brunhild — whose protection Sichar enjoyed — is furious; Chramnesind flees into exile in the Bourges country before finally winning his case. Tranquilla remarries. Sichar was about twenty when he died. Gregory writes his epitaph: a man "reckless, drunken, murderous."',
+  latin: 'Obiit autem Sicharius quasi annorum XX. Fuit autem in vita sua levis, ebriosus, homicida. — Hist. IX.19',
+  async run(c){
+    await droneShot(VILLA.x+3.6, VILLA.z+4.6, { zoom: 5.2, pol: 70, az: 120, dur: 2400 }, c.sig); // descend onto the body on the fence-post
+    await c.wait(1600);
+    const stop = trackActor(A.chram, { zoom: 2.8, pol: 60, az: -30 });
+    await walk(A.chram, 2, 5.6, c.sig, 8);
+    await walk(A.chram, 0.4, -10.4, c.sig, 8);
+    await walk(A.chram, TOURS.x-1.6, TOURS.z+1.0, c.sig, 6);
+    stop();
+    await camShot(TOURS.x-2.1, TOURS.z+0.4, { zoom: 4.6, pol: 66, az: 20, dur: 900 }, c.sig);
+    await say(A.chram, 'I beg my life, O glorious king! They slew my kin and stripped my house!', 3200, c.sig);
+    await say(A.king, 'The queen held Sichar in her word. Get you gone — and prove your cause.', 3000, c.sig);
+    await Promise.all([
+      walk(A.chram, TOURS.x-5.5, TOURS.z+3.4, c.sig, 5),
+      camShot(TOURS.x-4, TOURS.z+2.4, { zoom: 3.0, pol: 56, az: 45, dur: 2000 }, c.sig),
+    ]);
+    A.chram.userData.label.classList.add('dim');
+    SFX.bell(3);
+    await headline('FINIS', '"Levis, ebriosus, homicida." — thus Gregory of Tours buries Sichar, dead at twenty', c.sig);
+    await c.wait(800);
+    await camShot(0, -2, { zoom: 0.95, pol: 51, az: 45, dur: 3000 }, c.sig);
+  }
+},
+];
+
+/* ============================ acts ============================ */
+const ACTS = [
+  { num: 'PROLOGUS',   title: 'Touraine at Peace',          first: 0 },
+  { num: 'ACTUS I',    title: 'First Blood at the Feast',   first: 1 },
+  { num: 'ACTUS II',   title: 'Judgment & Massacre',        first: 5 },
+  { num: 'ACTUS III',  title: 'Fire & Silver',              first: 8 },
+  { num: 'ACTUS IV',   title: 'The Fatal Friendship',       first: 11 },
+  { num: 'EPILOGUS',   title: 'The Epitaph',                first: 13 },
+];
+function actOf(i){ let a = ACTS[0]; for (const x of ACTS) if (i >= x.first) a = x; return a; }
+async function showActCard(act, token){
+  const el = $('actcard');
+  el.querySelector('.num').textContent = act.num;
+  el.querySelector('.ttl').textContent = act.title;
+  el.classList.add('show');
+  try { await wait(2600, token); } finally { el.classList.remove('show'); }
+}
+
+/* ============================ scene runner ============================ */
+// low music bed per scene: tension under the violence, sorrow under courts and grief
+const SCENE_MUSIC = { 2:'tension', 3:'tension', 4:'tension', 6:'tension', 8:'tension', 9:'tension', 12:'tension',
+                      5:'sorrow', 7:'sorrow', 10:'sorrow', 13:'sorrow' };
+function applyInit(sc){
+  // clear transient fx
+  clearTracks();
+  clearFires(); clearBlood();
+  setHour(sc.hour);
+  setWeather(sc.weather);
+  villaIntact.visible = !sc.burned;
+  villaRuins.visible = sc.burned;
+  gibbet.visible = sc.gibbet;
+  setFeud(sc.feud);
+  setTreasury(sc.treasury);
+  SFX.music(SCENE_MUSIC[current] || null);
+  $('datechip').textContent = sc.date.match(/58[58]|586/) ? sc.date.match(/58\d/)[0] : '585';
+  // actors
+  for (const k of CAST){
+    const a = A[k];
+    reviveActor(a);
+    disarmActor(a);
+    a.visible = true;
+    const p = sc.pos[k] || FARAWAY;
+    a.position.set(p[0], 0, p[1]);
+    a.rotation.y = Math.PI + (rnd()-0.5);
+  }
+  for (const k of (sc.armed || [])) armActor(A[k]);
+  for (const k of sc.gone){ A[k].visible = false; A[k].position.set(0, 0, -60); }
+  for (const k of sc.dead){
+    const a = A[k];
+    a.userData.dead = true; a.rotation.z = Math.PI/2; a.position.y = 0.12;
+    a.userData.label.classList.add('dim');
+  }
+  // sheep home positions
+  villaSheep[0].position.set(VILLA.x-0.6, 0, VILLA.z+3.4);
+  villaSheep[1].position.set(VILLA.x+0.9, 0, VILLA.z+4.0);
+  villaSheep[2].position.set(VILLA.x+1.6, 0, VILLA.z+3.1);
+  farmSheep[0].position.set(FARM.x-1.2, 0, FARM.z+3.6);
+  farmSheep[1].position.set(FARM.x+0.5, 0, FARM.z+4.2);
+  if (sc.burned){ // villa flocks were taken east in scene 9+
+    villaSheep.forEach((s,i)=>s.position.set(FARM.x-2+i*0.9, 0, FARM.z+4.6));
+  }
+  // camera snap-ish
+  const off = camera.position.clone().sub(controls.target);
+  controls.target.set(sc.cam[0], 0, sc.cam[1]);
+  camera.position.copy(controls.target).add(off);
+  camera.zoom = sc.cam[2];
+  camera.updateProjectionMatrix();
+  // UI text
+  $('actcard').classList.remove('show');
+  $('scenenum').textContent = `${actOf(current).num} · SCENE ${current+1} / ${scenes.length}`;
+  $('scenetitle').textContent = sc.title;
+  $('scenedate').textContent = sc.date;
+  $('narr').textContent = sc.narr;
+  $('latin').textContent = sc.latin;
+  document.querySelectorAll('.dot').forEach((d,i)=>{
+    d.classList.toggle('on', i===current);
+    d.classList.toggle('done', i<current);
+  });
+}
+
+let current = 0, runToken = null;
+function ctx(sig){ return { sig, wait: (ms)=>wait(ms, sig) }; }
+async function playFrom(i){
+  if (runToken) runToken.aborted = true;
+  const token = { aborted: false };
+  runToken = token;
+  for (let s = i; s < scenes.length; s++){
+    if (token.aborted) return;
+    current = s;
+    applyInit(scenes[s]);
+    try {
+      const act = actOf(s);
+      if (act.first === s) await showActCard(act, token);
+      await scenes[s].run(ctx(token));
+    }
+    catch(e){ if (e === ABORT) return; console.error('scene error', e); }
+    if (token.aborted) return;
+    try { await wait(1100, token); } catch(e){ return; }
+  }
+  // loop back to overview hold
+  $('bplay').textContent = '▶';
+  paused = true;
+}
+
+/* ============================ controls ============================ */
+const dots = $('dots');
+scenes.forEach((s, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot'; d.title = `${i+1}. ${s.title}`;
+  d.onclick = () => { unpause(); playFrom(i); };
+  dots.appendChild(d);
+});
+function unpause(){ paused = false; $('bplay').textContent = '❚❚'; }
+$('bplay').onclick = () => { paused = !paused; $('bplay').textContent = paused ? '▶' : '❚❚'; };
+$('bnext').onclick = () => { unpause(); playFrom(Math.min(current+1, scenes.length-1)); };
+$('bprev').onclick = () => { unpause(); playFrom(Math.max(current-1, 0)); };
+$('brestart').onclick = () => { unpause(); playFrom(0); };
+$('bspeed').onchange = e => { speed = +e.target.value; };
+addEventListener('keydown', e => {
+  if (introActive()){
+    if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowRight'){ e.preventDefault(); introAdvance(); }
+    if (e.key === 'Escape') endIntro();
+    return;
+  }
+  if (e.key === ' '){ e.preventDefault(); $('bplay').click(); }
+  if (e.key === 'ArrowRight') $('bnext').click();
+  if (e.key === 'ArrowLeft') $('bprev').click();
+});
+/* ---------- retro intro sequence ---------- */
+const INTRO_SLIDES = [
+  { big: true },
+  { t: 'THE PLACE: TOURAINE', lines: [
+    '<span class="gold">✠ TOURS</span> ......... walled city of St Martin. The bishop keeps',
+    '                the peace here. Or tries to.',
+    '<span class="gold">⌂ MANTHELAN</span> ..... a village a day south. Tonight there is',
+    '                a CHRISTMAS FEAST.',
+    '<span class="red">⚔ WEST</span> .......... the villa of SICHAR — young, rich, reckless.',
+    '<span class="blue">⚔ EAST</span> .......... the farmstead of AUNO and his sons,',
+    '                among them CHRAMNESIND.',
+  ]},
+  { t: 'DRAMATIS PERSONAE · I', personae: [
+    { key: 'sichar', cls: 'red', arm: true, name: 'SICHAR, SON OF JOHN',
+      bio: 'Lord of the villa west of Manthelan. Twenty years old, rich in herds and silver, quick with wine and quicker with steel. Gregory will write his epitaph: <i>levis, ebriosus, homicida</i>.' },
+    { key: 'chram', cls: 'blue', name: 'CHRAMNESIND, SON OF AUNO',
+      bio: 'Heir of the farmstead east of the village. In one night he will lose father, brother and uncle — and be offered silver to forgive it. He remembers everything.' },
+  ]},
+  { t: 'DRAMATIS PERSONAE · II', personae: [
+    { key: 'austre', cls: 'green', arm: true, name: 'AUSTREGISEL',
+      bio: 'A man of Manthelan with a short temper and a long blade. He draws first at the Christmas feast — and lights the fuse of the whole feud.' },
+    { key: 'gregory', cls: 'gold', name: 'GREGORY, BISHOP OF TOURS',
+      bio: 'Shepherd of the city, historian of the Franks. He offers the Church\'s own silver to buy peace — and writes down everything you are about to see.' },
+  ]},
+  { t: 'DRAMATIS PERSONAE · III', personae: [
+    { key: 'auno', cls: 'blue', name: 'AUNO',
+      bio: 'Patriarch of the eastern farmstead. The stolen silver under his roof will cost him everything.' },
+    { key: 'judge', cls: 'gray', name: 'THE COUNT OF TOURS',
+      bio: 'The king\'s judge. His tribunal weighs blood against solidi.' },
+    { key: 'king', cls: 'gold', name: 'CHILDEBERT II, KING OF AUSTRASIA',
+      bio: 'Queen Brunhild\'s protection covers Sichar — even in his grave.' },
+  ]},
+  { t: 'THE RULES OF THE FEUD', lines: [
+    'RULE I ..... an insult to your house is answered IN BLOOD.',
+    'RULE II .... a death may instead be paid in silver.',
+    '             this is called <span class="gold">COMPOSITION</span>.',
+    'RULE III ... taking silver instead of vengeance?',
+    '             some men will call that <span class="red">WEAKNESS</span>.',
+    '',
+    'Everything you are about to see was recorded by Gregory',
+    'of Tours, Histories VII.47 & IX.19.',
+    '',
+    '        <span class="gold">*** THIS IS A TRUE STORY ***</span>',
+  ]},
+];
+/* live 3D portraits for the dramatis personae */
+let portraitR = null;
+const portraitCache = {};
+function portraitOf(key, withSword){
+  if (portraitCache[key]) return portraitCache[key];
+  if (!portraitR){
+    portraitR = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    portraitR.setSize(172, 208);
+    portraitR.setPixelRatio(2);
+  }
+  const sc = new THREE.Scene();
+  sc.add(new THREE.AmbientLight(0xffffff, 0.8));
+  const dl = new THREE.DirectionalLight(0xfff2d8, 1.7);
+  dl.position.set(2.5, 3, 4); sc.add(dl);
+  const a = A[key];
+  const hadSword = a.userData.sword.visible;
+  if (withSword) armActor(a, true, false);
+  const clone = a.clone(true);
+  if (withSword && !hadSword) disarmActor(a);
+  const strip = [];
+  clone.traverse(o => { if (o.isCSS2DObject) strip.push(o); });
+  strip.forEach(o => o.parent.remove(o));
+  clone.position.set(0, 0, 0); clone.rotation.set(0, 0.5, 0); clone.scale.setScalar(1); clone.visible = true;
+  sc.add(clone);
+  const cam = new THREE.OrthographicCamera(-0.62, 0.62, 1.68, 0.18, -10, 10);
+  cam.position.set(0, 0, 4);
+  portraitR.render(sc, cam);
+  const url = portraitR.domElement.toDataURL();
+  portraitCache[key] = url;
+  return url;
+}
+let introIdx = -1, introTyping = null;
+function typeLines(el, lines){
+  // typewriter over HTML: reveal characters, skipping tag markup atomically
+  const html = lines.join('\n');
+  return new Promise(res => {
+    let i = 0, out = '';
+    const step = () => {
+      if (i >= html.length){ introTyping = null; clearInterval(tm); res(); return; }
+      if (html[i] === '<'){ const j = html.indexOf('>', i); out += html.slice(i, j + 1); i = j + 1; }
+      else { out += html[i]; i++; if (i % 3 === 0) SFX.blip(); }
+      el.innerHTML = out;
+    };
+    const tm = setInterval(step, 13);
+    introTyping = () => { clearInterval(tm); el.innerHTML = html; introTyping = null; res(); };
+  });
+}
+async function introSlide(i){
+  introIdx = i;
+  const sl = INTRO_SLIDES[i];
+  $('introtitle').textContent = '';
+  $('introbody').innerHTML = '';
+  if (sl.big){
+    $('introbody').innerHTML = `<div id="bigtitle">
+      <div class="t1">MURDER &amp; MAYHEM</div>
+      <div class="t2">IN MEROVINGIAN TOURS</div>
+      <div class="t3">A TRUE CHRONICLE OF BLOOD-FEUD · A.D. 585–588</div>
+      <div class="t4">from the Histories of Gregory, Bishop of Tours</div>
+    </div>`;
+    SFX.blip();
+    return;
+  }
+  await typeLines($('introtitle'), [sl.t]);
+  if (sl.personae){
+    const cards = sl.personae.map(p => `
+      <div class="pcard">
+        <img src="${portraitOf(p.key, p.arm)}" alt="${p.name}">
+        <div><div class="pnm ${p.cls}">${p.name}</div><div class="pbio">${p.bio}</div></div>
+      </div>`).join('');
+    $('introbody').innerHTML = `<div id="personae">${cards}</div>`;
+    SFX.blip();
+  } else {
+    await typeLines($('introbody'), sl.lines);
+  }
+}
+function introAdvance(){
+  if (introTyping){ introTyping(); return; }       // finish typing instantly first
+  if (introIdx >= INTRO_SLIDES.length - 1){ endIntro(); return; }
+  introSlide(introIdx + 1);
+}
+function endIntro(){
+  $('intro').style.display = 'none';
+  introIdx = INTRO_SLIDES.length;
+  playFrom(0);
+}
+const introActive = () => $('intro').style.display === 'flex' && introIdx < INTRO_SLIDES.length;
+$('intro').onclick = () => introAdvance();
+$('introskip').onclick = e => { e.stopPropagation(); if (introTyping) introTyping(); endIntro(); };
+
+$('bootbtn').onclick = () => {
+  SFX.start();
+  SFX.music('intro');
+  document.getElementById('boot').classList.add('gone');
+  $('intro').style.display = 'flex';
+  introSlide(0);
+};
+$('bmute').onclick = () => {
+  SFX.start();
+  const m = SFX.toggleMute();
+  $('bmute').textContent = m ? 'SND OFF' : 'SND ON';
+};
+
+/* ============================ main loop ============================ */
+applyInit(scenes[0]);
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  stepEngine(dt);
+  controls.update();
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+}
+animate();
+
+// debug/test hook: advance simulated time manually (used by automated checks)
+window.__sim = {
+  async step(seconds){
+    const n = Math.ceil(seconds / 0.033);
+    for (let i = 0; i < n; i++){ stepEngine(0.033); await Promise.resolve(); }
+    controls.update();
+    renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
+    return current;
+  },
+  goto: i => { unpause(); playFrom(i); },
+  current: () => current,
+  begin(){ document.getElementById('boot').classList.add('gone'); playFrom(0); },
+};
+</script>
+</body>
+</html>
