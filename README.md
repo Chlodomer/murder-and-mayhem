@@ -1,19 +1,19 @@
 # Murder & Mayhem in Merovingian Tours
 
-A SimCity-style 3D simulation of the blood-feud of **Sichar and Chramnesind** (Tours, A.D. 585–588), as recorded by Gregory of Tours, *Histories* VII.47 & IX.19.
+A SimCity-style 3D simulation of the violent dispute between **Sichar and Chramnesind** (Tours, A.D. 585–588), as recorded by Gregory of Tours, *Histories* VII.47 & IX.19.
 
 **[▶ Play it here](https://chlodomer.github.io/murder-and-mayhem/)**
 
 ## What it is
 
-A single-file Three.js scene that plays the whole feud as 14 cinematic scenes across six acts — the Christmas killing at Manthelan, the church brawl, Austregisel's plunder, Sichar's night raid on Auno's farmstead, Bishop Gregory's failed peace offer, the false rumor of Sichar's death, Chramnesind's arson, the tribunal settlement, the strange friendship, and the fatal dinner of 588.
+A single-file Three.js scene that plays the whole affair as 14 cinematic scenes across six acts — the Christmas killing at Manthelan, the church brawl, Austregisel's plunder, Sichar's night raid on Auno's farmstead, Bishop Gregory's failed peace offer, the false rumor of Sichar's death, Chramnesind's arson, the tribunal settlement, the strange friendship, and the fatal dinner of 588.
 
 - Isometric low-poly Touraine: walled Tours on the Loire, Manthelan, two villas, lakes, hills, woods
 - Scripted scene engine with English narration + the original Latin
 - Cinematic camera: drone descents through clouds, hard cuts, orbits, tracking shots, slow-motion kills
 - Sword-and-shield combat, horses, fire and smoke, weather and a full day/night cycle
 - Character voices, sound effects, and music generated with the ElevenLabs API
-- Retro game chrome: feud meter, church treasury, newspaper headlines, CRT intro
+- Retro game chrome: vengeance meter, church treasury, newspaper headlines, CRT intro
 
 ## Run locally
 

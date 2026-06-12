@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MEROVINGIA — The Feud of Sichar &amp; Chramnesind</title>
+<title>MEROVINGIA — Sichar &amp; Chramnesind</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -194,7 +194,7 @@
   <div class="chip">CHURCH TREASURY <b id="treasury">1200</b> SOLIDI</div>
   <div class="chip">HORA <b id="clockchip">XIII</b> · <span id="weatherchip" style="color:#9fc6e8">CLEAR</span></div>
   <div id="feudwrap">
-    <span class="lbl">FEUD METER</span>
+    <span class="lbl">VENGEANCE</span>
     <div id="feudbar"><div id="feudfill"></div><div class="ticks"></div></div>
     <button id="bmute" style="flex:none;padding:4px 8px;font-size:9px">SND ON</button>
   </div>
@@ -231,7 +231,7 @@
 <div id="cloudfade"></div>
 
 <div id="boot">
-  <h1>MEROVINGIA<span>™</span><br>THE FEUD OF SICHAR &amp; CHRAMNESIND</h1>
+  <h1>MEROVINGIA<span>™</span><br>SICHAR &amp; CHRAMNESIND</h1>
   <p>"Gravia tunc inter Toronicos cives bella civilia surrexerunt…"<br>
   A grievous civil war arose among the citizens of Tours.<br>— Gregory of Tours, Histories VII.47 &amp; IX.19 (A.D. 585–588)</p>
   <button id="bootbtn">▶ BEGIN SIMULATION</button>
@@ -1948,7 +1948,7 @@ const scenes = [
          sichar: FARAWAY, audinus: FARAWAY, king: FARAWAY },
   dead: ['servant','puer1','puer2','puer3','puer4','auno','aunoSon','eberulf'], gone: ['sichar','audinus','king'],
   cam: [FARM.x, FARM.z+1, 2.2],
-  narr: 'Hearing that his enemy is dead, Chramnesind summons his kin and falls upon Sichar\'s estate. They strip the houses, kill the slaves, burn every building of Sichar\'s and of his neighbors, and drive off the cattle. The feud is now past any judge\'s mending — and Sichar is not even dead.',
+  narr: 'Hearing that his enemy is dead, Chramnesind summons his kin and falls upon Sichar\'s estate. They strip the houses, kill the slaves, burn every building of Sichar\'s and of his neighbors, and drive off the cattle. The violence is now past any judge\'s mending — and Sichar is not even dead.',
   latin: 'Domus omnes tam Sichari quam reliquorum… incendio concremavit, abducens secum pecora vel quaecumque movere potuit.',
   async run(c){
     await droneShot(FARM.x+3, FARM.z+2.4, { zoom: 4.6, pol: 67, az: 25, dur: 2000 }, c.sig);
@@ -1999,7 +1999,7 @@ const scenes = [
          audinus: FARAWAY, king: FARAWAY },
   dead: ['servant','puer1','puer2','puer3','puer4','auno','aunoSon','eberulf','sMan1','sMan2'], gone: ['audinus','king'],
   cam: [TOURS.x+3, TOURS.z+1.8, 2.5],
-  narr: 'Both parties are haled before the judges. The finding: Chramnesind, who burned houses rather than accept composition, forfeits half the blood-price owed him — against the strict law, Gregory notes, but done to make peace. Sichar pays the other half — with silver the Church provides. Oaths are sworn never to move against each other again. The feud is officially over.',
+  narr: 'Both parties are haled before the judges. The finding: Chramnesind, who burned houses rather than accept composition, forfeits half the blood-price owed him — against the strict law, Gregory notes, but done to make peace. Sichar pays the other half — with silver the Church provides. Oaths are sworn never to move against each other again. The dispute is officially settled.',
   latin: 'Datum ab aeclesia argentum… datis sibi partes invicem sacramentis, ut nullo umquam tempore contra alterum pars alia musitaret. Et sic altercatio terminum fecit.',
   async run(c){
     const push = camShot(TOURS.x+3.1, TOURS.z+1.4, { zoom: 3.6, pol: 63, az: 25, dur: 3000 }, c.sig);
@@ -2013,7 +2013,7 @@ const scenes = [
     await say(A.chram, 'And I.', 1500, c.sig);
     SFX.bell(2);
     await camShot(TOURS.x+2.5, TOURS.z+1.5, { zoom: 2.8, pol: 54, az: 40, dur: 1600 }, c.sig);
-    await headline('PEACE — AT A PRICE', 'Church silver closes the feud; oaths sworn before the count of Tours', c.sig);
+    await headline('PEACE — AT A PRICE', 'Church silver closes the dispute; oaths sworn before the count of Tours', c.sig);
   }
 },
 /* 11 — unlikely friends */ {
@@ -2074,7 +2074,7 @@ const scenes = [
       tweenHour(23, 1000, c.sig),
       camShot(A.sichar.position.x, A.sichar.position.z, { zoom: 4.0, pol: 71, az: 100, dur: 2400 }, c.sig), // low angle over the body
     ]);
-    await headline('SICHAR SLAIN AT TABLE', 'Host splits guest\'s skull as lamps go dark — feud reborn in a single stroke', c.sig);
+    await headline('SICHAR SLAIN AT TABLE', 'Host splits guest\'s skull as lamps go dark — vengeance reborn in a single stroke', c.sig);
   }
 },
 /* 13 — aftermath */ {
@@ -2266,7 +2266,7 @@ const INTRO_SLIDES = [
   ]},
   { t: 'DRAMATIS PERSONAE · II', personae: [
     { key: 'austre', cls: 'green', arm: true, name: 'AUSTREGISEL',
-      bio: 'A man of Manthelan with a short temper and a long blade. He draws first at the Christmas feast — and lights the fuse of the whole feud.' },
+      bio: 'A man of Manthelan with a short temper and a long blade. He draws first at the Christmas feast — and lights the fuse of the whole affair.' },
     { key: 'gregory', cls: 'gold', name: 'GREGORY, BISHOP OF TOURS',
       bio: 'Shepherd of the city, historian of the Franks. He offers the Church\'s own silver to buy peace — and writes down everything you are about to see.' },
   ]},
@@ -2278,7 +2278,7 @@ const INTRO_SLIDES = [
     { key: 'king', cls: 'gold', name: 'CHILDEBERT II, KING OF AUSTRASIA',
       bio: 'Queen Brunhild\'s protection covers Sichar — even in his grave.' },
   ]},
-  { t: 'THE RULES OF THE FEUD', lines: [
+  { t: 'HOW VENGEANCE WORKED', lines: [
     'RULE I ..... an insult to your house is answered IN BLOOD.',
     'RULE II .... a death may instead be paid in silver.',
     '             this is called <span class="gold">COMPOSITION</span>.',
@@ -2347,7 +2347,7 @@ async function introSlide(i){
     $('introbody').innerHTML = `<div id="bigtitle">
       <div class="t1">MURDER &amp; MAYHEM</div>
       <div class="t2">IN MEROVINGIAN TOURS</div>
-      <div class="t3">A TRUE CHRONICLE OF BLOOD-FEUD · A.D. 585–588</div>
+      <div class="t3">A TRUE CHRONICLE OF VENGEANCE · A.D. 585–588</div>
       <div class="t4">from the Histories of Gregory, Bishop of Tours</div>
     </div>`;
     SFX.blip();
